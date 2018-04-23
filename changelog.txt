@@ -1,0 +1,73 @@
+0.0.1 - initial post
+0.0.2 - fixed Canvas to allow for faster writing
+0.0.3 - fixed collider bug (collider bugged when destroyed)
+		fixed destroy bug (child wasn't destroyed)
+		fixed negative width problem (scaled sprites return negative width)
+		added game.ShowMouse(false); to show/hide mouse
+0.0.4 - added sound channel parameter to Sound.Play.
+		fixed system from running too fast on systems without vsync
+		fixed game.Destroy() to close window.
+		
+0.0.5  
+------
+AnimSprite:
+	- all fields protected instead of private now
+	- updated setUVS to deal with rounding errors which were causing visible tearing when aligning tiles
+Canvas:
+	- rewritten, now extends Sprite and allows existing images to be passed in, rotation, collision, and setting the origin
+Game:
+	- now allows listening for before and after update events to allow for manager addition without it having to be a game object.
+	- updated rendering mechanism to work with target frame rate and provide target vs real fps
+Key:
+	- table updated to include more keys and correct key codes
+GL:
+	- updated with codes for line drawing. 
+	- updated with codes for texture repetition
+GLContext:
+	- POLYGON_SMOOTH disabled to fix diagonal tearing in sprites.
+	- GLContext no longer drives the Time class to fix a timing bug concerning framerate and deltatime
+	- Turned off VSYNC by default, since it interfered with custom FPS rendering
+	- GLContext now takes parameter vsync on startup and handles all timing internally, by default vsync is true
+GameObject:
+	- now adds itself to the game instance for updates/collisions
+	- collision code moved from sprite to gameobject
+	- invalidate flag removed
+	- TransformPoint rewritten to reuse base class TransformPoint
+	- class is now partial
+Sprite:
+	- Hittest code moved to base class, installed BoxCollider through new mechanism
+	- Initialization and collider installing now overridable
+	- blendMode property added
+CollisionManager/UpdateManager:
+	- now handle double additions/removal correctly
+Time:
+	- updated time class to use glfw timing due to better granularity
+Texture2D:
+	- enabled wrap property, which allows you to set the texture to repeat mode (subclass of sprite required which modifies the UV's)
+BlendMode:
+	- added BlendMode class, please send in your awesome blendmode creations to Bram/Hans
+MouseHandler:
+	- added MouseHandler as a very basic event based interface to the Input.mouseXY/mousedown properties
+
+				
+0.0.7 - changed GetKeyDown and GetKeyMouse behaviour to allow for multiple calls pro frame
+      - Added sprite Texture cache cleanup
+      - Added Pivot class
+      - Added GetCollisions method to GameObject
+      - Updated game.width, game.height on resize so they should return actual width/height now
+      - Added InverseTransformPoint (not tested properly) and DistanceTo
+      - Added Mathf lib
+      - Renamed AnimSprite -> AnimationSprite
+      - GameObject is now an abstract class, use Pivot instead
+
+0.0.8 - Replaced all 'double' properties with floats
+
+0.0.9 - Fixed collision issue around max edges
+	Missing keycodes
+	White texture issue
+0.0.10 - White texture restored
+0.0.11 - Texture2D.Dispose returning null error resolved (Canvas.Destroy fix)
+	- targetFramerate can't go below 1 to avoid division by zero
+	- setScale added to set both scaleX and scaleY at once
+	- getMouseUp (thanks LeonB)
+	- Sprite.cs width/height getter/setter fixed .. they were using ints 
