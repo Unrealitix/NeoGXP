@@ -49,7 +49,7 @@ namespace GXPEngine.Managers
 		private void validateCase(GameObject gameObject) {
 			MethodInfo info = gameObject.GetType().GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 			if (info != null) {
-				throw new Exception("'Update' function was not binded for '" + gameObject + "'. Please check it's case. (capital U?)");
+				throw new Exception("'Update' function was not binded for '" + gameObject + "'. Please check its case. (capital U?)");
 			}
 		}
 

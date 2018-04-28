@@ -26,7 +26,7 @@ namespace GXPEngine
 		//														Random()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets a random value between the specified min and max.
+		/// Gets a random value between the specified min (inclusive) and max (exclusive).
 		/// If you want to receive an integer value, use two integers as parameters to this function.
 		/// </summary>
 		/// <param name='min'>

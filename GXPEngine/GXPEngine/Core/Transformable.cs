@@ -190,7 +190,7 @@ namespace GXPEngine
 		//														Move()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Move the object, based on it's current rotation.
+		/// Move the object, based on its current rotation.
 		/// </summary>
 		/// <param name='stepX'>
 		/// Step x.

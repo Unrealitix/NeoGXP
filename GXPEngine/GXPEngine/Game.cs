@@ -28,7 +28,7 @@ namespace GXPEngine
 		/// </summary>
 		public event StepDelegate OnBeforeStep;
 		/// <summary>
-		/// Occurs after the engine has finished it's last update loop. This allows you to define general manager classes that can update itself on/after each frame.
+		/// Occurs after the engine has finished its last update loop. This allows you to define general manager classes that can update itself on/after each frame.
 		/// </summary>
 		public event StepDelegate OnAfterStep;
 		
