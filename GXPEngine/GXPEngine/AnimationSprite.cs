@@ -36,7 +36,7 @@ namespace GXPEngine
 		/// <param name='frames'>
 		/// Optionally, indicate a number of frames. When left blank, defaults to width*height.
 		/// </param>
-		public AnimationSprite (string filename, int cols, int rows, int frames=-1) : base(filename)
+		public AnimationSprite (string filename, int cols, int rows, int frames=-1, bool keepInCache=false) : base(filename,keepInCache)
 		{
 			name = filename;
 			initializeAnimFrames(cols, rows, frames);

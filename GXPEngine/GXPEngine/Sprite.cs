@@ -52,10 +52,10 @@ namespace GXPEngine
 		/// <param name='filename'>
 		/// The name of the file that should be loaded.
 		/// </param>
-		public Sprite (string filename)
+		public Sprite (string filename, bool keepInCache=false)
 		{
 			name = filename;
-			initializeFromTexture(Texture2D.GetInstance(filename));
+			initializeFromTexture(Texture2D.GetInstance(filename, keepInCache));
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------

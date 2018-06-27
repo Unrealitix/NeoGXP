@@ -38,12 +38,15 @@ namespace GXPEngine.Core
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetInstance()
 		//------------------------------------------------------------------------------------------------------------------------
-		public static Texture2D GetInstance (string filename) {
+		public static Texture2D GetInstance (string filename, bool keepInCache=false) {
 			Texture2D tex2d = LoadCache[filename] as Texture2D;
 			if (tex2d == null) {
 				tex2d = new Texture2D(filename);
 				LoadCache[filename] = tex2d;
 			}
+			if (keepInCache) {
+				tex2d.count++;
+			}				
 			tex2d.count ++;
 			return tex2d;
 		}
