@@ -20,6 +20,7 @@ namespace GXPEngine.Core
 		private int[] _glTexture;
 		private string _filename = "";
 		private int count = 0;
+		private bool stayInCache = false;
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Texture2D()
@@ -44,9 +45,7 @@ namespace GXPEngine.Core
 				tex2d = new Texture2D(filename);
 				LoadCache[filename] = tex2d;
 			}
-			if (keepInCache) {
-				tex2d.count++;
-			}				
+			tex2d.stayInCache |= keepInCache; // setting it once to true keeps it in cache
 			tex2d.count ++;
 			return tex2d;
 		}
@@ -60,7 +59,7 @@ namespace GXPEngine.Core
 			if (LoadCache.ContainsKey (filename)) {
 				Texture2D tex2D = LoadCache[filename] as Texture2D;
 				tex2D.count --;
-				if (tex2D.count == 0) LoadCache.Remove (filename);
+				if (tex2D.count == 0 && !tex2D.stayInCache) LoadCache.Remove (filename);
 			}
 		}
 
