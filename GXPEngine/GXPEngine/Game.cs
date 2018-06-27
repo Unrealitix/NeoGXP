@@ -48,8 +48,13 @@ namespace GXPEngine
 		/// <param name='fullScreen'>
 		/// If set to <c>true</c> the application will run in fullscreen mode.
 		/// </param>
-		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true) : base()
+		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true, int pRealWidth=-1, int pRealHeight=-1) : base()
 		{
+			if (pRealWidth <= 0)
+				pRealWidth = pWidth;
+			if (pRealHeight <= 0)
+				pRealHeight = pHeight;
+			
 			if (main != null) {
 				throw new Exception ("Only a single instance of Game is allowed");
 			} else {
@@ -58,7 +63,7 @@ namespace GXPEngine
 				_updateManager = new UpdateManager ();
 				_collisionManager = new CollisionManager ();
 				_glContext = new GLContext (this);
-				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync);
+				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync, pRealWidth, pRealHeight);
 				_gameObjectsContained = new List<GameObject>();
 
 				//register ourselves for updates
@@ -87,7 +92,8 @@ namespace GXPEngine
 		/// The new height of the viewport.
 		/// </param>
 		public void SetViewport(int x, int y, int width, int height) {
-			_glContext.SetScissor(x, y, width, height);
+			// Translate from GXPEngine coordinates (origin top left) to OpenGL coordinates (origin bottom left):
+			_glContext.SetScissor(x, game.height - height - y, width, height);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------

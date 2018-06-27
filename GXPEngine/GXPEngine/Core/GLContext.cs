@@ -31,7 +31,10 @@ namespace GXPEngine.Core {
 		private int _frameCount = 0;
 		private int _lastFPS = 0;
 		private bool _vsyncEnabled = false;
-		
+
+		private double _realToLogicWidthRatio;
+		private double _realToLogicHeightRatio;
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														RenderWindow()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -57,15 +60,18 @@ namespace GXPEngine.Core {
 		//------------------------------------------------------------------------------------------------------------------------
 		//														setupWindow()
 		//------------------------------------------------------------------------------------------------------------------------
-		public void CreateWindow(int width, int height, bool fullScreen, bool vSync) {
+		public void CreateWindow(int width, int height, bool fullScreen, bool vSync, int realWidth, int realHeight) {
+			// This stores the "logical" width, used by all the game logic:
 			WindowSize.instance.width = width;
 			WindowSize.instance.height = height;
+			_realToLogicWidthRatio = (double)realWidth / width;
+			_realToLogicHeightRatio = (double)realHeight / height;
 			_vsyncEnabled = vSync;
 			
 			GL.glfwInit();
 			
 			GL.glfwOpenWindowHint(GL.GLFW_FSAA_SAMPLES, 8);
-			GL.glfwOpenWindow(width, height, 8, 8, 8, 8, 24, 0, (fullScreen?GL.GLFW_FULLSCREEN:GL.GLFW_WINDOWED));
+			GL.glfwOpenWindow(realWidth, realHeight, 8, 8, 8, 8, 24, 0, (fullScreen?GL.GLFW_FULLSCREEN:GL.GLFW_WINDOWED));
 			GL.glfwSetWindowTitle("Game");
 			GL.glfwSwapInterval(vSync);
 			
@@ -94,14 +100,16 @@ namespace GXPEngine.Core {
 				GL.Hint (GL.PERSPECTIVE_CORRECTION, GL.FASTEST);
 				//GL.Enable (GL.POLYGON_SMOOTH);
 				GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-				
+
+				// Load the basic projection settings:
 				GL.MatrixMode(GL.PROJECTION);
 				GL.LoadIdentity();
-				GL.Ortho(0.0f, newWidth, newHeight, 0.0f, 0.0f, 1000.0f);
+				// Here's where the conversion from logical width/height to real width/height happens: 
+				GL.Ortho(0.0f, newWidth / _realToLogicWidthRatio, newHeight / _realToLogicHeightRatio, 0.0f, 0.0f, 1000.0f);
 
 				lock (WindowSize.instance) {
-					WindowSize.instance.width = newWidth;
-					WindowSize.instance.height = newHeight;
+					WindowSize.instance.width = (int)(newWidth/_realToLogicWidthRatio);
+					WindowSize.instance.height = (int)(newHeight/_realToLogicHeightRatio);
 				}
 			});
 		}
@@ -127,7 +135,14 @@ namespace GXPEngine.Core {
 			} else {
 				GL.Enable(GL.SCISSOR_TEST);
 			}
-			GL.Scissor(x, y, width, height);
+
+			GL.Scissor(
+				(int)(x*_realToLogicWidthRatio), 
+				(int)(y*_realToLogicHeightRatio), 
+				(int)(width*_realToLogicWidthRatio), 
+				(int)(height*_realToLogicHeightRatio)
+			);
+			//GL.Scissor(x, y, width, height);
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
