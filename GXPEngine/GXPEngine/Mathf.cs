@@ -198,6 +198,14 @@ namespace GXPEngine
 			return (float)Math.Truncate (f);
 		}
 
+		/// <summary>
+		/// Clamps f in the range [min,max]:
+		/// Returns min if f<min, max if f>max, and f otherwise.
+		/// </summary>
+		public static float Clamp(float f, float min, float max) {
+			return f < min ? min : (f > max ? max : f);
+		}
+
 	}
 }
 
