@@ -67,7 +67,8 @@ namespace GXPEngine
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_SetFrequency")]
 		public static extern void Channel_SetFrequency( int channel, float frequency );
-
+		
+	// Stop
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_Stop")]
 		public static extern void Channel_Stop( int channel );
 
@@ -99,11 +100,6 @@ namespace GXPEngine
 	// Spectrum // can also be done in System for total output, not tested yet
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetSpectrum")]
 		public static extern void Channel_GetSpectrum( int channel, float [] spectrumarray, int numvalues, int channeloffset, int windowtype );
-
-
-	// Stop
-//		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_Stop")]
-//		public static extern void Channel_Stop( int channel );
 
 	// Volume
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetVolume")]
