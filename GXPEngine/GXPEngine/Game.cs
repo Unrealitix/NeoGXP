@@ -228,10 +228,27 @@ namespace GXPEngine
 			set {
 				_glContext.targetFps = value;
 			}
+		}	
+
+		int CountSubtreeSize(GameObject subtreeRoot) {
+			int counter=1; // for the root
+			foreach (GameObject child in subtreeRoot.GetChildren()) {
+				counter += CountSubtreeSize (child);
+			}
+			return counter;
 		}
 
-
-		
+		public string GetDiagnostics() {
+			string output = "";
+			output += "Number of game objects contained: "+_gameObjectsContained.Count+'\n';
+			output += "Number of objects in hierarchy: " + CountSubtreeSize (this)+'\n';
+			output += "OnBeforeStep delegates: "+(OnBeforeStep==null?0:OnBeforeStep.GetInvocationList().Length)+'\n';
+			output += "OnAfterStep delegates: "+(OnAfterStep==null?0:OnAfterStep.GetInvocationList().Length)+'\n';
+			output += Texture2D.GetDiagnostics ();
+			output += _collisionManager.GetDiagnostics (); 
+			output += _updateManager.GetDiagnostics (); 
+			return output;
+		}
 	}
 }
 

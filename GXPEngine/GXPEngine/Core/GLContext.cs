@@ -32,8 +32,8 @@ namespace GXPEngine.Core {
 		private int _lastFPS = 0;
 		private bool _vsyncEnabled = false;
 
-		private double _realToLogicWidthRatio;
-		private double _realToLogicHeightRatio;
+		private static double _realToLogicWidthRatio;
+		private static double _realToLogicHeightRatio;
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														RenderWindow()

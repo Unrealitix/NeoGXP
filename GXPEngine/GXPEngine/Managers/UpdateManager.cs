@@ -71,6 +71,12 @@ namespace GXPEngine.Managers
 				_updateReferences.Remove(gameObject);
 			}
 		}
+
+		public string GetDiagnostics() {
+			string output = "";
+			output += "Number of update delegates: " + _updateReferences.Count+'\n';
+			return output;
+		}
 	}
 }
 

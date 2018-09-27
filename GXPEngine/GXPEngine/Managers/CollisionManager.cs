@@ -122,7 +122,13 @@ namespace GXPEngine
 				_collisionReferences.Remove(gameObject);
 			}
 		}
-		
+
+		public string GetDiagnostics() {
+			string output = "";
+			output += "Number of colliders: " + colliderList.Count+'\n';
+			output += "Number of active colliders: " + activeColliderList.Count+'\n';
+			return output;
+		}
 	}
 }
 

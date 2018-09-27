@@ -210,7 +210,11 @@ namespace GXPEngine.Core
 			}
 		}
 
-
+		public static string GetDiagnostics() {
+			string output = "";
+			output += "Number of textures in cache: " + LoadCache.Keys.Count+'\n';
+			return output;
+		}
 	}
 }
 
