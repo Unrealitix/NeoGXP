@@ -197,7 +197,7 @@ namespace GXPEngine.Core {
 			GL.LoadIdentity();
 			
 			_owner.Render(this);
-			
+
 			GL.glfwSwapBuffers();
 			if (GetKey(Key.ESCAPE)) this.Close();
 		}

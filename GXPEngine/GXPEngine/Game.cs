@@ -31,6 +31,9 @@ namespace GXPEngine
 		/// Occurs after the engine has finished its last update loop. This allows you to define general manager classes that can update itself on/after each frame.
 		/// </summary>
 		public event StepDelegate OnAfterStep;
+
+		public delegate void RenderDelegate (GLContext glContext);
+		public event RenderDelegate OnAfterRender;
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Game()
@@ -93,6 +96,7 @@ namespace GXPEngine
 		/// </param>
 		public void SetViewport(int x, int y, int width, int height) {
 			// Translate from GXPEngine coordinates (origin top left) to OpenGL coordinates (origin bottom left):
+			//Console.WriteLine ("Setting viewport to {0},{1},{2},{3}",x,y,width,height);
 			_glContext.SetScissor(x, game.height - height - y, width, height);
 		}
 
@@ -134,6 +138,17 @@ namespace GXPEngine
 			_collisionManager.Step ();
 			if (OnAfterStep != null)
 				OnAfterStep ();
+		}
+
+		bool recurse=true;
+
+		public override void Render(GLContext glContext) {
+			base.Render (glContext);
+			if (OnAfterRender != null && recurse) {
+				recurse = false;
+				OnAfterRender (glContext);
+				recurse = true;
+			}
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -244,6 +259,7 @@ namespace GXPEngine
 			output += "Number of objects in hierarchy: " + CountSubtreeSize (this)+'\n';
 			output += "OnBeforeStep delegates: "+(OnBeforeStep==null?0:OnBeforeStep.GetInvocationList().Length)+'\n';
 			output += "OnAfterStep delegates: "+(OnAfterStep==null?0:OnAfterStep.GetInvocationList().Length)+'\n';
+			output += "OnAfterRender delegates: "+(OnAfterRender==null?0:OnAfterRender.GetInvocationList().Length)+'\n';
 			output += Texture2D.GetDiagnostics ();
 			output += _collisionManager.GetDiagnostics (); 
 			output += _updateManager.GetDiagnostics (); 
