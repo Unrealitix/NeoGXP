@@ -33,7 +33,7 @@ namespace GXPEngine
 		/// <param name='cached'>
 		/// If set to <c>true</c>, the sound will be stored in cache, preserving memory when creating the same sound multiple times.
 		/// </param>
-		public Sound( String filename, bool looping = false, bool streaming = false, bool cached = true )
+		public Sound( String filename, bool looping = false, bool streaming = false)
 		{
 			if ( _system == 0 ) { // if fmod not initialized, create system and init default
 				FMOD.System_Create( out _system );
@@ -44,15 +44,11 @@ namespace GXPEngine
 			if ( streaming ) {
 				FMOD.System_CreateStream( _system, filename, loop, 0, out _id );	
 			} else {
-				if (!cached) {
-					FMOD.System_CreateSound (_system, filename, loop, 0, out _id);
+				if (_soundCache.ContainsKey (filename)) {
+					_id = _soundCache [filename];
 				} else {
-					if (_soundCache.ContainsKey (filename)) {
-						_id = _soundCache [filename];
-					} else {
-						FMOD.System_CreateSound (_system, filename, loop, 0, out _id);
-						_soundCache [filename] = _id;
-					}
+					FMOD.System_CreateSound (_system, filename, loop, 0, out _id);
+					_soundCache [filename] = _id;
 				}
 			}
 		}
