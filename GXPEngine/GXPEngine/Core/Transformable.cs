@@ -150,9 +150,6 @@ namespace GXPEngine
 			ret.y = (_matrix[1] * x * _scaleX + _matrix[5] * y * _scaleY + _matrix[13]);
 			return ret;
 		}
-		// Remark for advanced users:
-		//  The GXPEngine uses row vectors, so what TransformPoint essentially does is:
-		//    parentSpaceVector = localSpaceVector * ScaleMatrix * RotationMatrix * TranslationMatrix
 
 
 
