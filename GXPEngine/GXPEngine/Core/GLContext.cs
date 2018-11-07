@@ -294,6 +294,8 @@ namespace GXPEngine.Core {
 		//------------------------------------------------------------------------------------------------------------------------
 		public static void UpdateMouseInput() {
 			GL.glfwGetMousePos(out mouseX, out mouseY);
+			mouseX = (int)(mouseX / _realToLogicWidthRatio);
+			mouseY = (int)(mouseY / _realToLogicHeightRatio);
 		}
 		
 		public int currentFps {
