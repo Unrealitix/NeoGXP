@@ -62,12 +62,6 @@ namespace GXPEngine {
 		/// of the viewport window.
 		/// </summary>
 		public GameObject camera;
-		/// <summary>
-		/// everything in the hierarchy below this object is rendered to the window.
-		/// typically: use the main game.
-		/// </summary>
-		public GameObject sceneRoot = Game.main;
-
 
 		// private variables:
 		int _windowX, _windowY;
@@ -80,16 +74,12 @@ namespace GXPEngine {
 		/// Creates a render window in the rectangle given by x,y,width,height.
 		/// The camera determines the focal point, rotation and scale of this window.
 		/// </summary>
-		public Window(int x, int y, int width, int height, GameObject camera, GameObject sceneRoot=null) {
+		public Window(int x, int y, int width, int height, GameObject camera) {
 			_windowX = x;
 			_windowY = y;
 			_width = width;
 			_height = height;
 			this.camera = camera;
-			this.sceneRoot = sceneRoot;
-			if (this.sceneRoot == null) {
-				this.sceneRoot = Game.main;
-			}
 			window = new Transformable ();
 		}
 
@@ -97,7 +87,6 @@ namespace GXPEngine {
 		/// To render the scene in this window, subscribe this method to the main game's OnAfterRender event.
 		/// </summary>
 		public void RenderWindow(GLContext glContext) {
-			Game.main.SetViewport (_windowX, _windowY, _width, _height);
 
 			if (_dirty) {
 				window.x = _windowX + _width / 2;
@@ -109,24 +98,48 @@ namespace GXPEngine {
 			int pushes = 1;
 			GameObject current = camera;
 			Transformable cameraInverse;
-			while (current!=null && current!=sceneRoot) {
+			while (true) {
 				cameraInverse = current.Inverse ();
 				glContext.PushMatrix (cameraInverse.matrix);
 				pushes++;
+				if (current.parent == null)
+					break;
 				current = current.parent;
 			}
-			if (current != null) {
-				cameraInverse = current.Inverse ();
-				glContext.PushMatrix (cameraInverse.matrix);
-				pushes++;
-			}
 
-			GL.Clear(GL.COLOR_BUFFER_BIT);
-			sceneRoot.Render (glContext);
+			if (current is Game) {// otherwise, the camera is not in the scene hierarchy, so render nothing - not even a black background
+				Game main=Game.main;
+				SetRenderRange();
+				main.SetViewport (_windowX, _windowY, _width, _height);
+				GL.Clear(GL.COLOR_BUFFER_BIT);
+				current.Render (glContext);
+				main.SetViewport (0, 0, Game.main.width, Game.main.height);
+				main.RenderRange = new GXPEngine.Core.Rectangle (0, 0, main.width, main.height);
+			}
+			
 			for (int i=0; i<pushes; i++) {
 				glContext.PopMatrix ();
 			}
-			Game.main.SetViewport (0, 0, Game.main.width, Game.main.height);
+		}
+
+		void SetRenderRange() {
+			Vector2[] worldSpaceCorners = new Vector2[4];
+			worldSpaceCorners[0] = camera.TransformPoint(-_width/2, -_height/2);
+			worldSpaceCorners[1] = camera.TransformPoint(-_width/2,  _height/2);
+			worldSpaceCorners[2] = camera.TransformPoint( _width/2,  _height/2);
+			worldSpaceCorners[3] = camera.TransformPoint( _width/2, -_height/2);
+
+			float maxX = float.MinValue;
+			float maxY = float.MinValue;
+			float minX = float.MaxValue;
+			float minY = float.MaxValue;
+			for (int i=0; i<4; i++) {
+				if (worldSpaceCorners[i].x > maxX) maxX = worldSpaceCorners[i].x;
+				if (worldSpaceCorners[i].x < minX) minX = worldSpaceCorners[i].x;
+				if (worldSpaceCorners[i].y > maxY) maxY = worldSpaceCorners[i].y;
+				if (worldSpaceCorners[i].y < minY) minY = worldSpaceCorners[i].y;
+			}
+			Game.main.RenderRange = new GXPEngine.Core.Rectangle (minX, minY, maxX - minX, maxY - minY);
 		}
 	}
 }

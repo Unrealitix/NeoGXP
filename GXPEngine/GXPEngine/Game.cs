@@ -34,6 +34,23 @@ namespace GXPEngine
 
 		public delegate void RenderDelegate (GLContext glContext);
 		public event RenderDelegate OnAfterRender;
+
+		/// <summary>
+		/// Sprites will be rendered if and only if they overlap with this rectangle. 
+		/// Default value: (0,0,game.width,game.height). 
+		/// You only need to change this when rendering to subwindows (e.g. split screen).
+		/// </summary>
+		/// <value>The render range.</value>
+		public Rectangle RenderRange {
+			get {
+				return _renderRange;
+			}
+			set {
+				_renderRange = value;
+			}
+		}
+
+		private Rectangle _renderRange;
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Game()
@@ -53,10 +70,12 @@ namespace GXPEngine
 		/// </param>
 		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true, int pRealWidth=-1, int pRealHeight=-1) : base()
 		{
-			if (pRealWidth <= 0)
+			if (pRealWidth <= 0) {
 				pRealWidth = pWidth;
-			if (pRealHeight <= 0)
+			}
+			if (pRealHeight <= 0) {
 				pRealHeight = pHeight;
+			}
 			
 			if (main != null) {
 				throw new Exception ("Only a single instance of Game is allowed");
@@ -68,6 +87,8 @@ namespace GXPEngine
 				_glContext = new GLContext (this);
 				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync, pRealWidth, pRealHeight);
 				_gameObjectsContained = new List<GameObject>();
+
+				_renderRange = new Rectangle (0, 0, pWidth, pHeight);
 
 				//register ourselves for updates
 				Add (this);

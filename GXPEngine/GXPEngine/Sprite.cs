@@ -145,7 +145,7 @@ namespace GXPEngine
 					if (bounds[i].y > maxY) maxY = bounds[i].y;
 					if (bounds[i].y < minY) minY = bounds[i].y;
 				}
-				bool test = (maxX < 0) || (maxY < 0) || (minX >= game.width) || (minY >= game.height);
+				bool test = (maxX < game.RenderRange.left) || (maxY < game.RenderRange.top) || (minX >= game.RenderRange.right) || (minY >= game.RenderRange.bottom);
 				if (test == false) {
 					if (blendMode != null) blendMode.enable ();
 					_texture.Bind();
