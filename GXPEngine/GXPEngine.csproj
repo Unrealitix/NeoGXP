@@ -33,6 +33,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyGame.cs" />
@@ -62,8 +63,14 @@
     <Compile Include="GXPEngine\Utils\MouseHandler.cs" />
     <Compile Include="GXPEngine\Utils\Time.cs" />
     <Compile Include="GXPEngine\Utils\Utils.cs" />
+    <Compile Include="GXPEngine\AddOns\Camera.cs" />
+    <Compile Include="GXPEngine\AddOns\HierarchyManager.cs" />
+    <Compile Include="GXPEngine\AddOns\Settings.cs" />
+    <Compile Include="GXPEngine\AddOns\TiledMapParser.cs" />
+    <Compile Include="GXPEngine\AddOns\Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GXPEngine\" />
+    <Folder Include="GXPEngine\AddOns\" />
   </ItemGroup>
 </Project>

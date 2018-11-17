@@ -360,9 +360,9 @@ namespace TiledMapParser
 		[XmlAttribute("type")]
 		public string Type;
 		[XmlAttribute("width")]		// width in pixels
-		public int Width;
+		public float Width;
 		[XmlAttribute("height")]	// height in pixels
-		public int Height;
+		public float Height;
 		[XmlAttribute("x")]
 		public float X;
 		[XmlAttribute("y")]
