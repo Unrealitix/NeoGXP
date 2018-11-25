@@ -43,11 +43,17 @@ namespace GXPEngine
 			if ( looping ) loop = FMOD.FMOD_LOOP_NORMAL;
 			if ( streaming ) {
 				FMOD.System_CreateStream( _system, filename, loop, 0, out _id );	
+				if (_id == 0) {
+					throw new Exception ("Sound file not found: " + filename);
+				}
 			} else {
 				if (_soundCache.ContainsKey (filename)) {
 					_id = _soundCache [filename];
 				} else {
 					FMOD.System_CreateSound (_system, filename, loop, 0, out _id);
+					if (_id == 0) {
+						throw new Exception ("Sound file not found: " + filename);
+					}
 					_soundCache [filename] = _id;
 				}
 			}
