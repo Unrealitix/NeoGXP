@@ -254,9 +254,9 @@ namespace GXPEngine
 		/// The blue component, range 0..1
 		/// </param>
 		public void SetColor(float r, float g, float b) {
-			r = Utils.Clamp(r, 0, 1);
-			g = Utils.Clamp(g, 0, 1);
-			b = Utils.Clamp(b, 0, 1);
+			r = Mathf.Clamp(r, 0, 1);
+			g = Mathf.Clamp(g, 0, 1);
+			b = Mathf.Clamp(b, 0, 1);
 			byte rr = (byte)Math.Floor((r * 255));
 			byte rg = (byte)Math.Floor((g * 255));
 			byte rb = (byte)Math.Floor((b * 255));
