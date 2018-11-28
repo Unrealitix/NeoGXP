@@ -79,6 +79,11 @@ namespace GXPEngine
 				pRealHeight = pHeight;
 			}
 			PixelArt = pPixelArt;
+			if (PixelArt) {
+				x = 0.1f;
+				y = 0.1f;
+				// it's magic
+			}
 			
 			if (main != null) {
 				throw new Exception ("Only a single instance of Game is allowed");
