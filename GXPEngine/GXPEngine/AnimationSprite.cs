@@ -147,23 +147,25 @@ namespace GXPEngine
 			float left = _frameWidth * frameX;
 			float right = left + _frameWidth;
 
-			//fix1
-			float wp = .5f / _texture.width;
-			left += wp;
-			right -= wp;
-			//end fix1
-
-			float frameLeft = _mirrorX?right:left;
-			float frameRight = _mirrorX?left:right;
-
 			float top = _frameHeight * frameY;
 			float bottom = top + _frameHeight;
 
-			//fix2
-			float hp = .5f / _texture.height;
-			top += hp;
-			bottom -= hp;
-			//end fix2
+			if (!game.PixelArt) {
+				//fix1
+				float wp = .5f / _texture.width;
+				left += wp;
+				right -= wp;
+				//end fix1
+
+				//fix2
+				float hp = .5f / _texture.height;
+				top += hp;
+				bottom -= hp;
+				//end fix2
+			}
+
+			float frameLeft = _mirrorX?right:left;
+			float frameRight = _mirrorX?left:right;
 
 			float frameTop = _mirrorY?bottom:top;
 			float frameBottom = _mirrorY?top:bottom;

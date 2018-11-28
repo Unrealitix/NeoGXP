@@ -50,6 +50,8 @@ namespace GXPEngine
 			}
 		}
 
+		public readonly bool PixelArt;
+
 		private Rectangle _renderRange;
 		
 		//------------------------------------------------------------------------------------------------------------------------
@@ -68,7 +70,7 @@ namespace GXPEngine
 		/// <param name='fullScreen'>
 		/// If set to <c>true</c> the application will run in fullscreen mode.
 		/// </param>
-		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true, int pRealWidth=-1, int pRealHeight=-1) : base()
+		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true, int pRealWidth=-1, int pRealHeight=-1, bool pPixelArt=false) : base()
 		{
 			if (pRealWidth <= 0) {
 				pRealWidth = pWidth;
@@ -76,6 +78,7 @@ namespace GXPEngine
 			if (pRealHeight <= 0) {
 				pRealHeight = pHeight;
 			}
+			PixelArt = pPixelArt;
 			
 			if (main != null) {
 				throw new Exception ("Only a single instance of Game is allowed");

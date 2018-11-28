@@ -152,8 +152,13 @@ namespace GXPEngine.Core
 			GL.GenTextures (1, _glTexture);
 			
 			GL.BindTexture (GL.TEXTURE_2D, _glTexture[0]);
-			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);//GL.NEAREST);
-			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			if (Game.main.PixelArt) {
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			} else {
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			}
 			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE_EXT);
 			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE_EXT);	
 			

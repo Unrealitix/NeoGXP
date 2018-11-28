@@ -44,8 +44,12 @@ namespace GXPEngine
 			pen = new Pen (Color.White, 1);
 			brush = new SolidBrush (Color.White);
 			font = defaultFont;
-			graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit; //AntiAlias;
-			graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			if (!game.PixelArt) {
+				graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit; //AntiAlias;
+				graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			} else {
+				graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+			}
 		}
 
 		//////////// Setting Font
