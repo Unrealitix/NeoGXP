@@ -68,6 +68,7 @@
     <Compile Include="GXPEngine\AddOns\Settings.cs" />
     <Compile Include="GXPEngine\AddOns\TiledMapParser.cs" />
     <Compile Include="GXPEngine\AddOns\Window.cs" />
+    <Compile Include="GXPEngine\AddOns\EasyDraw.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GXPEngine\" />
