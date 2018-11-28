@@ -42,17 +42,6 @@ namespace GXPEngine
 			return (float)(random.NextDouble() * (max - min) + min);
 		}
 
-		//------------------------------------------------------------------------------------------------------------------------
-		//														Clamp()
-		//------------------------------------------------------------------------------------------------------------------------
-		/// <summary>
-		/// Clamps the given value between the given min and max value
-		/// </summary>
-		public static float Clamp(float value, float min, float max) {
-			if (value < min) value = min;
-			if (value > max) value = max;
-			return value;
-		}
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														print()
