@@ -14,15 +14,15 @@ namespace GXPEngine
 	{
 		static Font defaultFont = new Font ("Noto Sans", 15);
 
+		public CenterMode HorizontalTextAlign=CenterMode.Min;
+		public CenterMode VerticalTextAlign=CenterMode.Max;
+		public CenterMode HorizontalShapeAlign=CenterMode.Center;
+		public CenterMode VerticalShapeAlign=CenterMode.Center;
 		public Font font		{ get; protected set;}
 		public Pen pen			{ get; protected set;}
 		public SolidBrush brush	{ get; protected set;}
 		protected bool _stroke=true;
 		protected bool _fill=true;
-		protected CenterMode _horizontal=CenterMode.Min;
-		protected CenterMode _vertical=CenterMode.Max;
-		protected CenterMode _horizontalShape=CenterMode.Center;
-		protected CenterMode _verticalShape=CenterMode.Center;
 
 		public EasyDraw (int width, int height) : base (new Bitmap (width, height))
 		{
@@ -59,12 +59,7 @@ namespace GXPEngine
 			font = newFont;
 		}
 
-		public void TextFont(string fontName, float pointSize) 
-		{
-			font = new Font (fontName, pointSize);
-		}
-
-		public void TextFont(string fontName, float pointSize, FontStyle style) 
+		public void TextFont(string fontName, float pointSize, FontStyle style = FontStyle.Regular) 
 		{
 			font = new Font (fontName, pointSize, style);
 		}
@@ -78,14 +73,14 @@ namespace GXPEngine
 		 
 		public void TextAlign(CenterMode horizontal, CenterMode vertical) 
 		{
-			_horizontal = horizontal;
-			_vertical = vertical;
+			HorizontalTextAlign = horizontal;
+			VerticalTextAlign = vertical;
 		}
 
 		public void ShapeAlign(CenterMode horizontal, CenterMode vertical) 
 		{
-			_horizontalShape = horizontal;
-			_verticalShape = vertical;
+			HorizontalShapeAlign = horizontal;
+			VerticalShapeAlign = vertical;
 		}
 
 		//////////// Setting Stroke
@@ -95,37 +90,19 @@ namespace GXPEngine
 			_stroke=false;
 		}
 
-		public void Stroke(Color newColor) 
-		{
-			pen.Color = newColor;
-			_stroke = true;
-		}
-
-		public void Stroke(Color newColor, int alpha) 
+		public void Stroke(Color newColor, int alpha=255) 
 		{
 			pen.Color = Color.FromArgb (alpha, newColor);
 			_stroke = true;
 		}
 
-		public void Stroke(int grayScale) 
-		{
-			pen.Color = Color.FromArgb (255, grayScale, grayScale, grayScale);
-			_stroke = true;
-		}
-
-		public void Stroke(int grayScale, int alpha) 
+		public void Stroke(int grayScale, int alpha=255) 
 		{
 			pen.Color = Color.FromArgb (alpha, grayScale, grayScale, grayScale);
 			_stroke = true;
 		}
 
-		public void Stroke(int red, int green, int blue) 
-		{
-			pen.Color = Color.FromArgb (255, red, green, blue);
-			_stroke = true;
-		}
-
-		public void Stroke(int red, int green, int blue, int alpha) 
+		public void Stroke(int red, int green, int blue, int alpha=255) 
 		{
 			pen.Color = Color.FromArgb (alpha, red, green, blue);
 			_stroke = true;
@@ -144,40 +121,39 @@ namespace GXPEngine
 			_fill = false;
 		}
 
-		public void Fill(Color newColor) 
-		{
-			brush.Color = newColor;
-			_fill = true;
-		}
-
-		public void Fill(Color newColor, int alpha) 
+		public void Fill(Color newColor, int alpha=255) 
 		{
 			brush.Color = Color.FromArgb (alpha, newColor);
 			_fill = true;
 		}
 
-		public void Fill(int grayScale) 
-		{
-			brush.Color = Color.FromArgb (255, grayScale, grayScale, grayScale);
-			_fill = true;
-		}
-
-		public void Fill(int grayScale, int alpha) 
+		public void Fill(int grayScale, int alpha=255) 
 		{
 			brush.Color = Color.FromArgb (alpha, grayScale, grayScale, grayScale);
 			_fill = true;
 		}
 
-		public void Fill(int red, int green, int blue) 
-		{
-			brush.Color = Color.FromArgb (255, red, green, blue);
-			_fill = true;
-		}
-
-		public void Fill(int red, int green, int blue, int alpha) 
+		public void Fill(int red, int green, int blue, int alpha=255) 
 		{
 			brush.Color = Color.FromArgb (alpha, red, green, blue);
 			_fill = true;
+		}
+
+		//////////// Clear
+
+		public void Clear(Color newColor) 
+		{
+			graphics.Clear (newColor);
+		}
+
+		public void Clear(int grayScale) 
+		{
+			graphics.Clear(Color.FromArgb(255, grayScale, grayScale, grayScale));
+		}
+
+		public void Clear(int red, int green, int blue) 
+		{
+			graphics.Clear(Color.FromArgb (255, red, green, blue));
 		}
 
 		//////////// Draw & measure Text
@@ -186,17 +162,17 @@ namespace GXPEngine
 		{
 			float twidth,theight;
 			TextDimensions (text, out twidth, out theight);
-			if (_horizontal == CenterMode.Max) 
+			if (HorizontalTextAlign == CenterMode.Max) 
 			{
 				x -= twidth;
-			} else if (_horizontal == CenterMode.Center) 
+			} else if (HorizontalTextAlign == CenterMode.Center) 
 			{ 
 				x -= twidth / 2;
 			}
-			if (_vertical == CenterMode.Max) 
+			if (VerticalTextAlign == CenterMode.Max) 
 			{
 				y -= theight;
-			} else if (_vertical == CenterMode.Center) 
+			} else if (VerticalTextAlign == CenterMode.Center) 
 			{
 				y -= theight / 2;
 			}
@@ -286,17 +262,17 @@ namespace GXPEngine
 		}
 
 		protected void ShapeAlign(ref float x, ref float y, float width, float height) {
-			if (_horizontalShape == CenterMode.Max) 
+			if (HorizontalShapeAlign == CenterMode.Max) 
 			{
 				x -= width;
-			} else if (_horizontalShape == CenterMode.Center) 
+			} else if (HorizontalShapeAlign == CenterMode.Center) 
 			{ 
 				x -= width / 2;
 			}
-			if (_verticalShape == CenterMode.Max) 
+			if (VerticalShapeAlign == CenterMode.Max) 
 			{
 				y -= height;
-			} else if (_verticalShape == CenterMode.Center) 
+			} else if (VerticalShapeAlign == CenterMode.Center) 
 			{
 				y -= height / 2;
 			}

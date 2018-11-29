@@ -79,10 +79,11 @@ namespace GXPEngine
 				pRealHeight = pHeight;
 			}
 			PixelArt = pPixelArt;
+
 			if (PixelArt) {
-				x = 0.1f;
-				y = 0.1f;
-				// it's magic
+				// offset should be smaller than 1/(2 * "pixelsize"), but not zero:
+				x = 0.01f;
+				y = 0.01f;
 			}
 			
 			if (main != null) {
