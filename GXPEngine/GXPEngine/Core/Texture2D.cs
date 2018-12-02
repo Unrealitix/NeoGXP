@@ -20,6 +20,7 @@ namespace GXPEngine.Core
 		private int[] _glTexture;
 		private string _filename = "";
 		private int count = 0;
+		private bool stayInCache = false;
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Texture2D()
@@ -38,12 +39,13 @@ namespace GXPEngine.Core
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetInstance()
 		//------------------------------------------------------------------------------------------------------------------------
-		public static Texture2D GetInstance (string filename) {
+		public static Texture2D GetInstance (string filename, bool keepInCache=false) {
 			Texture2D tex2d = LoadCache[filename] as Texture2D;
 			if (tex2d == null) {
 				tex2d = new Texture2D(filename);
 				LoadCache[filename] = tex2d;
 			}
+			tex2d.stayInCache |= keepInCache; // setting it once to true keeps it in cache
 			tex2d.count ++;
 			return tex2d;
 		}
@@ -57,7 +59,7 @@ namespace GXPEngine.Core
 			if (LoadCache.ContainsKey (filename)) {
 				Texture2D tex2D = LoadCache[filename] as Texture2D;
 				tex2D.count --;
-				if (tex2D.count == 0) LoadCache.Remove (filename);
+				if (tex2D.count == 0 && !tex2D.stayInCache) LoadCache.Remove (filename);
 			}
 		}
 
@@ -150,8 +152,13 @@ namespace GXPEngine.Core
 			GL.GenTextures (1, _glTexture);
 			
 			GL.BindTexture (GL.TEXTURE_2D, _glTexture[0]);
-			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);//GL.NEAREST);
-			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			if (Game.main.PixelArt) {
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			} else {
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+				GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			}
 			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE_EXT);
 			GL.TexParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE_EXT);	
 			
@@ -208,7 +215,11 @@ namespace GXPEngine.Core
 			}
 		}
 
-
+		public static string GetDiagnostics() {
+			string output = "";
+			output += "Number of textures in cache: " + LoadCache.Keys.Count+'\n';
+			return output;
+		}
 	}
 }
 

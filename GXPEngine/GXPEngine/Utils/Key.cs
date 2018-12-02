@@ -81,6 +81,9 @@ namespace GXPEngine
 		public const int NUMPAD_7   = 309;
 		public const int NUMPAD_8   = 310;
 		public const int NUMPAD_9   = 311;
+		public const int MINUS   	= 314;
+		public const int PLUS   	= 315;
+
 		public const int LEFT_ALT   = 291;
 		public const int RIGHT_ALT  = 292;
 		public const int TAB  = 293;

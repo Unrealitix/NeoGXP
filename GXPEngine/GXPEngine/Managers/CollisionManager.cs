@@ -107,7 +107,7 @@ namespace GXPEngine
 		private void validateCase(GameObject gameObject) {
 			MethodInfo info = gameObject.GetType().GetMethod("OnCollision", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 			if (info != null) {
-				throw new Exception("'OnCollision' function was not binded. Please check it's correct case (capital O?)");
+				throw new Exception("'OnCollision' function was not binded. Please check its case (capital O?)");
 			}
 		}
 		
@@ -122,7 +122,13 @@ namespace GXPEngine
 				_collisionReferences.Remove(gameObject);
 			}
 		}
-		
+
+		public string GetDiagnostics() {
+			string output = "";
+			output += "Number of colliders: " + colliderList.Count+'\n';
+			output += "Number of active colliders: " + activeColliderList.Count+'\n';
+			return output;
+		}
 	}
 }
 

@@ -26,7 +26,7 @@ namespace GXPEngine
 		//														Random()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets a random value between the specified min and max.
+		/// Gets a random value between the specified min (inclusive) and max (exclusive).
 		/// If you want to receive an integer value, use two integers as parameters to this function.
 		/// </summary>
 		/// <param name='min'>
@@ -42,17 +42,6 @@ namespace GXPEngine
 			return (float)(random.NextDouble() * (max - min) + min);
 		}
 
-		//------------------------------------------------------------------------------------------------------------------------
-		//														Clamp()
-		//------------------------------------------------------------------------------------------------------------------------
-		/// <summary>
-		/// Clamps the given value between the given min and max value
-		/// </summary>
-		public static float Clamp(float value, float min, float max) {
-			if (value < min) value = min;
-			if (value > max) value = max;
-			return value;
-		}
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														print()

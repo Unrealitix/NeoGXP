@@ -8,6 +8,7 @@ namespace GXPEngine
 	/// </summary>
 	public class Transformable
 	{
+
 		protected float[] _matrix = new float[16] { 
 			1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
@@ -23,7 +24,7 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		public Transformable () {
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetMatrix()
 		//------------------------------------------------------------------------------------------------------------------------		
@@ -150,6 +151,8 @@ namespace GXPEngine
 			return ret;
 		}
 
+
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Rotation
 		//------------------------------------------------------------------------------------------------------------------------
@@ -190,7 +193,7 @@ namespace GXPEngine
 		//														Move()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Move the object, based on it's current rotation.
+		/// Move the object, based on its current rotation.
 		/// </summary>
 		/// <param name='stepX'>
 		/// Step x.
@@ -303,6 +306,24 @@ namespace GXPEngine
 			}
 		}
 
+		/// <summary>
+		/// Returns the inverse matrix transformation, if it exists.
+		/// (Use this e.g. for cameras used by sub windows)
+		/// </summary>
+		public Transformable Inverse() {
+			Transformable inv=new Transformable();
+			if (scaleX == 0 || scaleY == 0)
+				throw new Exception ("Cannot invert a transform with scale 0");
+			float cs = _matrix [0];
+			float sn = _matrix [1];
+			inv._matrix [0] = cs / scaleX;
+			inv._matrix [1] = -sn / scaleY;
+			inv._matrix [4] = sn / scaleX;
+			inv._matrix [5] = cs / scaleY;
+			inv.x = (-x * cs - y * sn) / scaleX;
+			inv.y = (x * sn - y * cs) / scaleY;
+			return inv;
+		}
 	}
 }
 

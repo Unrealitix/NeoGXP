@@ -28,9 +28,31 @@ namespace GXPEngine
 		/// </summary>
 		public event StepDelegate OnBeforeStep;
 		/// <summary>
-		/// Occurs after the engine has finished it's last update loop. This allows you to define general manager classes that can update itself on/after each frame.
+		/// Occurs after the engine has finished its last update loop. This allows you to define general manager classes that can update itself on/after each frame.
 		/// </summary>
 		public event StepDelegate OnAfterStep;
+
+		public delegate void RenderDelegate (GLContext glContext);
+		public event RenderDelegate OnAfterRender;
+
+		/// <summary>
+		/// Sprites will be rendered if and only if they overlap with this rectangle. 
+		/// Default value: (0,0,game.width,game.height). 
+		/// You only need to change this when rendering to subwindows (e.g. split screen).
+		/// </summary>
+		/// <value>The render range.</value>
+		public Rectangle RenderRange {
+			get {
+				return _renderRange;
+			}
+			set {
+				_renderRange = value;
+			}
+		}
+
+		public readonly bool PixelArt;
+
+		private Rectangle _renderRange;
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Game()
@@ -48,8 +70,22 @@ namespace GXPEngine
 		/// <param name='fullScreen'>
 		/// If set to <c>true</c> the application will run in fullscreen mode.
 		/// </param>
-		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true) : base()
+		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true, int pRealWidth=-1, int pRealHeight=-1, bool pPixelArt=false) : base()
 		{
+			if (pRealWidth <= 0) {
+				pRealWidth = pWidth;
+			}
+			if (pRealHeight <= 0) {
+				pRealHeight = pHeight;
+			}
+			PixelArt = pPixelArt;
+
+			if (PixelArt) {
+				// offset should be smaller than 1/(2 * "pixelsize"), but not zero:
+				x = 0.01f;
+				y = 0.01f;
+			}
+			
 			if (main != null) {
 				throw new Exception ("Only a single instance of Game is allowed");
 			} else {
@@ -58,8 +94,10 @@ namespace GXPEngine
 				_updateManager = new UpdateManager ();
 				_collisionManager = new CollisionManager ();
 				_glContext = new GLContext (this);
-				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync);
+				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync, pRealWidth, pRealHeight);
 				_gameObjectsContained = new List<GameObject>();
+
+				_renderRange = new Rectangle (0, 0, pWidth, pHeight);
 
 				//register ourselves for updates
 				Add (this);
@@ -87,7 +125,9 @@ namespace GXPEngine
 		/// The new height of the viewport.
 		/// </param>
 		public void SetViewport(int x, int y, int width, int height) {
-			_glContext.SetScissor(x, y, width, height);
+			// Translate from GXPEngine coordinates (origin top left) to OpenGL coordinates (origin bottom left):
+			//Console.WriteLine ("Setting viewport to {0},{1},{2},{3}",x,y,width,height);
+			_glContext.SetScissor(x, game.height - height - y, width, height);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -128,6 +168,17 @@ namespace GXPEngine
 			_collisionManager.Step ();
 			if (OnAfterStep != null)
 				OnAfterStep ();
+		}
+
+		bool recurse=true;
+
+		public override void Render(GLContext glContext) {
+			base.Render (glContext);
+			if (OnAfterRender != null && recurse) {
+				recurse = false;
+				OnAfterRender (glContext);
+				recurse = true;
+			}
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -222,10 +273,28 @@ namespace GXPEngine
 			set {
 				_glContext.targetFps = value;
 			}
+		}	
+
+		int CountSubtreeSize(GameObject subtreeRoot) {
+			int counter=1; // for the root
+			foreach (GameObject child in subtreeRoot.GetChildren()) {
+				counter += CountSubtreeSize (child);
+			}
+			return counter;
 		}
 
-
-		
+		public string GetDiagnostics() {
+			string output = "";
+			output += "Number of game objects contained: "+_gameObjectsContained.Count+'\n';
+			output += "Number of objects in hierarchy: " + CountSubtreeSize (this)+'\n';
+			output += "OnBeforeStep delegates: "+(OnBeforeStep==null?0:OnBeforeStep.GetInvocationList().Length)+'\n';
+			output += "OnAfterStep delegates: "+(OnAfterStep==null?0:OnAfterStep.GetInvocationList().Length)+'\n';
+			output += "OnAfterRender delegates: "+(OnAfterRender==null?0:OnAfterRender.GetInvocationList().Length)+'\n';
+			output += Texture2D.GetDiagnostics ();
+			output += _collisionManager.GetDiagnostics (); 
+			output += _updateManager.GetDiagnostics (); 
+			return output;
+		}
 	}
 }
 

@@ -52,10 +52,10 @@ namespace GXPEngine
 		/// <param name='filename'>
 		/// The name of the file that should be loaded.
 		/// </param>
-		public Sprite (string filename)
+		public Sprite (string filename, bool keepInCache=false)
 		{
 			name = filename;
-			initializeFromTexture(Texture2D.GetInstance(filename));
+			initializeFromTexture(Texture2D.GetInstance(filename, keepInCache));
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ namespace GXPEngine
 					if (bounds[i].y > maxY) maxY = bounds[i].y;
 					if (bounds[i].y < minY) minY = bounds[i].y;
 				}
-				bool test = (maxX < 0) || (maxY < 0) || (minX >= game.width) || (minY >= game.height);
+				bool test = (maxX < game.RenderRange.left) || (maxY < game.RenderRange.top) || (minX >= game.RenderRange.right) || (minY >= game.RenderRange.bottom);
 				if (test == false) {
 					if (blendMode != null) blendMode.enable ();
 					_texture.Bind();
@@ -254,9 +254,9 @@ namespace GXPEngine
 		/// The blue component, range 0..1
 		/// </param>
 		public void SetColor(float r, float g, float b) {
-			r = Utils.Clamp(r, 0, 1);
-			g = Utils.Clamp(g, 0, 1);
-			b = Utils.Clamp(b, 0, 1);
+			r = Mathf.Clamp(r, 0, 1);
+			g = Mathf.Clamp(g, 0, 1);
+			b = Mathf.Clamp(b, 0, 1);
 			byte rr = (byte)Math.Floor((r * 255));
 			byte rg = (byte)Math.Floor((g * 255));
 			byte rb = (byte)Math.Floor((b * 255));

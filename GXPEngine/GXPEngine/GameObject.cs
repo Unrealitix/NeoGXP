@@ -127,7 +127,7 @@ namespace GXPEngine
 		/// <summary>
 		/// This function is called by the renderer. You can override it to change this object's rendering behaviour.
 		/// When not inside the GXPEngine package, specify the parameter as GXPEngine.Core.GLContext.
-		/// This function was made public to accomoadate split screen rendering. Use SetViewPort for that.
+		/// This function was made public to accomodate split screen rendering. Use SetViewPort for that.
  		/// </summary>
 		/// <param name='glContext'>
 		/// Gl context, will be supplied by internal caller.
@@ -149,9 +149,9 @@ namespace GXPEngine
 		//														RenderSelf
 		//------------------------------------------------------------------------------------------------------------------------
 		protected virtual void RenderSelf(GLContext glContext) {
-			if (visible == false) return;
-			glContext.PushMatrix(matrix);
-			glContext.PopMatrix();
+			//if (visible == false) return;
+			//glContext.PushMatrix(matrix);
+			//glContext.PopMatrix();
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------

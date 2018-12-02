@@ -46,17 +46,6 @@ namespace GXPEngine
 
 
 		//------------------------------------------------------------------------------------------------------------------------
-		//														Destroy()
-		//------------------------------------------------------------------------------------------------------------------------
-		/// <summary>
-		/// Destroys this sprite and underlying graphics object.
-		/// </summary>
-		override public void Destroy() {
-			_graphics.Dispose();
-			base.Destroy();
-		}
-
-		//------------------------------------------------------------------------------------------------------------------------
 		//														graphics
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
@@ -105,6 +94,10 @@ namespace GXPEngine
 			graphics.DrawImage(sprite.texture.bitmap, destPoints);
 		}
 
+		// Called by the garbage collector
+		~Canvas() {
+			_graphics.Dispose();
+		}
 	}
 }
 

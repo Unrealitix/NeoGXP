@@ -36,7 +36,7 @@ namespace GXPEngine
 		/// <param name='frames'>
 		/// Optionally, indicate a number of frames. When left blank, defaults to width*height.
 		/// </param>
-		public AnimationSprite (string filename, int cols, int rows, int frames=-1) : base(filename)
+		public AnimationSprite (string filename, int cols, int rows, int frames=-1, bool keepInCache=false) : base(filename,keepInCache)
 		{
 			name = filename;
 			initializeAnimFrames(cols, rows, frames);
@@ -69,7 +69,7 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		//														initializeAnimFrames()
 		//------------------------------------------------------------------------------------------------------------------------
-		private void initializeAnimFrames(int cols, int rows, int frames=-1) 
+		protected void initializeAnimFrames(int cols, int rows, int frames=-1) 
 		{
 			if (frames < 0) frames = rows * cols;
 			if (frames > rows * cols) frames = rows * cols;
@@ -147,23 +147,25 @@ namespace GXPEngine
 			float left = _frameWidth * frameX;
 			float right = left + _frameWidth;
 
-			//fix1
-			float wp = .5f / _texture.width;
-			left += wp;
-			right -= wp;
-			//end fix1
-
-			float frameLeft = _mirrorX?right:left;
-			float frameRight = _mirrorX?left:right;
-
 			float top = _frameHeight * frameY;
 			float bottom = top + _frameHeight;
 
-			//fix2
-			float hp = .5f / _texture.height;
-			top += hp;
-			bottom -= hp;
-			//end fix2
+			if (!game.PixelArt) {
+				//fix1
+				float wp = .5f / _texture.width;
+				left += wp;
+				right -= wp;
+				//end fix1
+
+				//fix2
+				float hp = .5f / _texture.height;
+				top += hp;
+				bottom -= hp;
+				//end fix2
+			}
+
+			float frameLeft = _mirrorX?right:left;
+			float frameRight = _mirrorX?left:right;
 
 			float frameTop = _mirrorY?bottom:top;
 			float frameBottom = _mirrorY?top:bottom;
