@@ -29,6 +29,9 @@ namespace GXPEngine
 		/// </param>
 		public Sprite (System.Drawing.Bitmap bitmap)
 		{
+			if (Game.main == null) {
+				throw new Exception ("Sprites cannot be created before creating a Game instance.");
+			}
 			name = "BMP" + bitmap.Width + "x" + bitmap.Height;
 			initializeFromTexture(new Texture2D(bitmap));
 		}
@@ -54,6 +57,9 @@ namespace GXPEngine
 		/// </param>
 		public Sprite (string filename, bool keepInCache=false)
 		{
+			if (Game.main == null) {
+				throw new Exception ("Sprites cannot be created before creating a Game instance.");
+			}
 			name = filename;
 			initializeFromTexture(Texture2D.GetInstance(filename, keepInCache));
 		}
