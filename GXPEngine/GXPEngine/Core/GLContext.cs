@@ -111,6 +111,10 @@ namespace GXPEngine.Core {
 					WindowSize.instance.width = (int)(newWidth/_realToLogicWidthRatio);
 					WindowSize.instance.height = (int)(newHeight/_realToLogicHeightRatio);
 				}
+
+				if (Game.main!=null) {
+					Game.main.RenderRange=new Rectangle(0,0,WindowSize.instance.width,WindowSize.instance.height);
+				}
 			});
 		}
 		
