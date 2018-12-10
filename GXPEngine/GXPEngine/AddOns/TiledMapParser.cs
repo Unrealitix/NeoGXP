@@ -220,9 +220,9 @@ namespace TiledMapParser
 		[XmlElement("image")]
 		public Image Image;
 		[XmlAttribute("offsetx")]
-		public int offsetX = 0;
+		public float offsetX = 0;
 		[XmlAttribute("offsety")]
-		public int offsetY = 0;
+		public float offsetY = 0;
 
 		override public string ToString() {
 			return "Image layer: " + Name + " Image: " + Image + "\n";
