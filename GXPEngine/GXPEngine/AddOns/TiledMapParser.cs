@@ -260,6 +260,39 @@ namespace TiledMapParser
 			output += "Data:" + Data.ToString ();
 			return output;
 		}
+
+		/// <summary>
+		/// Returns the tile data from this layer as a 2-dimensional array of shorts. 
+		/// It's a column-major array, so use [column,row] as indices.
+		/// 
+		/// This method does a lot of string parsing and memory allocation, so use it only once,
+		/// during level loading.
+		/// </summary>
+		/// <returns>The tile array.</returns>
+		public short[,] GetTileArray() {
+			short[,] grid = new short[Width, Height];
+			string[] lines = Data.innerXML.Split ('\n');
+			int row = 0;
+
+			foreach (string line in lines) {
+				if (line.Length <= 1)
+					continue;
+				string parseLine = line;
+				if (line [line.Length - 1] == ',')
+					parseLine = line.Substring (0, line.Length - 1);
+
+				string[] chars = parseLine.Split (',');
+				for (int col = 0; col < chars.Length; col++) {
+					if (col < Width) {
+						short tileNum = short.Parse (chars [col]);
+						grid [col, row] = tileNum;
+					}
+				}
+				row++;
+			}
+
+			return grid;
+		}
 	}
 
 	[XmlRootAttribute("data")]
