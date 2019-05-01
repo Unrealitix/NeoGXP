@@ -320,18 +320,17 @@ namespace GXPEngine
 		/// It is zero if the two game objects are already overlapping, and 
 		///   moving by vx and vy would cause a worse overlap.
 		/// In all other cases, the returned value is bigger than 1.
-		/// If a time of impact below 1 is returned, the normal will be the collision normal.
+		/// If a time of impact below 1 is returned, the normal will be the collision normal 
+		///   (otherwise it is undefined).
 		/// </summary>
 		virtual public float TimeOfImpact (GameObject other, float vx, float vy, out Vector2 normal) {
 			normal = new Vector2 ();
 			if (_collider == null || other._collider == null || parent==null)
-				return float.MaxValue;			
+				return float.MaxValue;
+			// Compute world space velocity:
 			Vector2 p1 = parent.TransformPoint (vx, vy);
 			Vector2 p0 = parent.TransformPoint (0, 0);
 			float TOI=_collider.TimeOfImpact (other._collider, p1.x-p0.x, p1.y-p0.y, out normal);
-			//if (TOI <= 1) {
-			//	Console.WriteLine ("Collision with normal: "+normal);
-			//}
 			return TOI;
 		}
 

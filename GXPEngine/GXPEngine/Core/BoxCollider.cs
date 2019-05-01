@@ -202,6 +202,8 @@ namespace GXPEngine.Core
 		// d: points of body 2
 		// vx,vy: relative velocity of body 2 w. resp. to body 1
 		// TOI/TOE: time of impact/exit. Updated when we find better values along this normal.
+		//
+		// Returns true if the TOI is updated.
 		private bool updateImpactExitTime(float cx, float cy, float nx, float ny, float dx, float dy, Vector2[] d, float vx, float vy, ref float maxTOI, ref float minTOE) {
 			float dot = (dy * ny + dx * nx);
 
