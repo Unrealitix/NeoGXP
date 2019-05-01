@@ -21,6 +21,11 @@ namespace GXPEngine.Core
 		public virtual bool HitTestPoint (float x, float y) {
 			return false;
 		}
+
+		public virtual float TimeOfImpact (Collider other, float vx, float vy, out Vector2 normal) {
+			normal = new Vector2 ();
+			return float.MaxValue;
+		}
 	}
 }
 

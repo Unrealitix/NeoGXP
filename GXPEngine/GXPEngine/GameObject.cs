@@ -312,6 +312,61 @@ namespace GXPEngine
 			return _collider != null && other._collider != null && _collider.HitTest (other._collider);
 		}
 
+		/// <summary>
+		/// If changing the x and y coordinates of this GameObject by vx and vy respectively
+		///   would cause a collision with the GameObject other, this method returns a 
+		///   "time of impact" between 0 and 1,
+		///   which is a scalar multiplier for vx and vy, giving the amount of safe movement until collision.
+		/// It is zero if the two game objects are already overlapping, and 
+		///   moving by vx and vy would cause a worse overlap.
+		/// In all other cases, the returned value is bigger than 1.
+		/// If a time of impact below 1 is returned, the normal will be the collision normal.
+		/// </summary>
+		virtual public float TimeOfImpact (GameObject other, float vx, float vy, out Vector2 normal) {
+			normal = new Vector2 ();
+			if (_collider == null || other._collider == null || parent==null)
+				return float.MaxValue;			
+			Vector2 p1 = parent.TransformPoint (vx, vy);
+			Vector2 p0 = parent.TransformPoint (0, 0);
+			float TOI=_collider.TimeOfImpact (other._collider, p1.x-p0.x, p1.y-p0.y, out normal);
+			//if (TOI <= 1) {
+			//	Console.WriteLine ("Collision with normal: "+normal);
+			//}
+			return TOI;
+		}
+
+		/// <summary>
+		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
+		/// until it collides with another object. 
+		/// In case of a collision, the returned vector is the collision normal.
+		/// Otherwise it is (0,0).
+		/// 
+		/// Note: this is a very expensive method - use with care.
+		/// </summary>
+		virtual public Vector2 MoveUntilCollision(float vx, float vy) {
+			x += vx;
+			y += vy;
+			GameObject[] overlaps = GetCollisions ();
+			Vector2 normal = new Vector2 ();
+			if (overlaps.Length == 0) {
+				return normal;
+			}
+			float minTOI = 1;
+			x -= vx;
+			y -= vy;
+			foreach (GameObject other in overlaps) {
+				Vector2 newNormal;
+				float newTOI = TimeOfImpact (other, vx, vy, out newNormal);
+				if (newTOI < minTOI) {
+					normal = newNormal;
+					minTOI = newTOI;
+				}
+			}
+			x += vx * minTOI;
+			y += vy * minTOI;
+			return normal;
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HitTestPoint()
 		//------------------------------------------------------------------------------------------------------------------------
