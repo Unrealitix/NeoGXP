@@ -1,5 +1,6 @@
 using GXPEngine;
 using System.Collections.Generic;
+using System;
 
 struct GameObjectPair {
 	public GameObject parent;
@@ -20,8 +21,6 @@ namespace GXPEngine {
 	/// after the update loop.
 	/// </summary>
 	class HierarchyManager {
-		public delegate void DelayedMethod();
-
 		public static HierarchyManager Instance {
 			get {
 				if (instance == null) {
@@ -34,14 +33,14 @@ namespace GXPEngine {
 
 		private List<GameObjectPair> toAdd;
 		private List<GameObject> toDestroy;
-		private List<DelayedMethod> toCall;
+		private List<Action> toCall;
 
 		// Don't construct these yourself - get the one HierarchyManager using HierarchyManager.Instance
 		HierarchyManager() {
 			Game.main.OnAfterStep += UpdateHierarchy;
 			toAdd = new List<GameObjectPair> ();
 			toDestroy = new List<GameObject> ();
-			toCall = new List<DelayedMethod> ();
+			toCall = new List<Action> ();
 		}
 
 		public void LateAdd(GameObject parent, GameObject child) {
@@ -56,7 +55,7 @@ namespace GXPEngine {
 			return toDestroy.Contains (obj);
 		}
 
-		public void LateCall(DelayedMethod meth) {
+		public void LateCall(Action meth) {
 			toCall.Add (meth);
 		}
 
@@ -71,8 +70,9 @@ namespace GXPEngine {
 			}
 			toDestroy.Clear ();
 
-			foreach (DelayedMethod method in toCall) {
-				method ();
+			// This type of loop supports calling LateCall from within the loop:
+			for (int i = 0; i < toCall.Count; i++) {
+				toCall [i] ();
 			}
 			toCall.Clear ();
 		}
