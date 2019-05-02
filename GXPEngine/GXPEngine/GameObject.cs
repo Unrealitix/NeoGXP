@@ -336,24 +336,19 @@ namespace GXPEngine
 
 		/// <summary>
 		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
-		/// until it collides with another object. 
+		/// until it collides with one of the given objects. 
 		/// In case of a collision, the returned vector is the collision normal.
 		/// Otherwise it is (0,0).
-		/// 
-		/// Note: this is a very expensive method - use with care.
 		/// </summary>
-		virtual public Vector2 MoveUntilCollision(float vx, float vy) {
-			x += vx;
-			y += vy;
-			GameObject[] overlaps = GetCollisions ();
+		virtual public Vector2 MoveUntilCollision(float vx, float vy, GameObject[] objectsToCheck) {
 			Vector2 normal = new Vector2 ();
-			if (overlaps.Length == 0) {
+			if (objectsToCheck.Length == 0) {
+				x += vx;
+				y += vy;
 				return normal;
 			}
 			float minTOI = 1;
-			x -= vx;
-			y -= vy;
-			foreach (GameObject other in overlaps) {
+			foreach (GameObject other in objectsToCheck) {
 				Vector2 newNormal;
 				float newTOI = TimeOfImpact (other, vx, vy, out newNormal);
 				if (newTOI < minTOI) {
@@ -364,6 +359,24 @@ namespace GXPEngine
 			x += vx * minTOI;
 			y += vy * minTOI;
 			return normal;
+		}
+
+		/// <summary>
+		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
+		/// until it collides with another object. 
+		/// In case of a collision, the returned vector is the collision normal.
+		/// Otherwise it is (0,0).
+		/// 
+		/// Note: this is a very expensive method since it uses GetCollisions - use with care.
+		/// </summary>
+		virtual public Vector2 MoveUntilCollision(float vx, float vy) {
+			// using discrete collision detection (tunneling possible):
+			x += vx;
+			y += vy;
+			GameObject[] overlaps = GetCollisions ();
+			x -= vx;
+			y -= vy;
+			return MoveUntilCollision (vx, vy, overlaps);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
