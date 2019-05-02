@@ -16,6 +16,7 @@ namespace GXPEngine
 		private GameObject _parent = null;
 		
 		public bool visible = true;
+		private bool destroyed = false;
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GameObject()
@@ -28,7 +29,7 @@ namespace GXPEngine
 		public GameObject()
 		{
 			_collider = createCollider();
-			if (Game.main != null) Game.main.Add(this);
+			//if (Game.main != null) Game.main.Add(this);
 		}
 
 		/// <summary>
@@ -94,18 +95,17 @@ namespace GXPEngine
 		/// </summary>
 		public virtual void Destroy ()
 		{
-			if (!game.Contains (this)) return;
+			destroyed = true;
+			// Detach from parent (and thus remove it from the managers):
+			if (parent != null) parent = null;
+
 			OnDestroy();
 
-			//detach all children
+			// Destroy all children:
 			while (_children.Count > 0) {
 				GameObject child = _children[0];
 				if (child != null) child.Destroy();
 			}
-			//detatch from parent
-			if (parent != null) parent = null;
-			//remove from game
-			if (Game.main != null) Game.main.Remove (this);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -164,17 +164,41 @@ namespace GXPEngine
 		public GameObject parent {
 			get { return _parent; }
 			set { 
+				bool wasActive = InHierarchy ();
 				if (_parent != null) {
 					_parent.removeChild(this);
 					_parent = null;
 				}
 				_parent = value;
 				if (value != null) {
+					if (destroyed) {
+						throw new Exception ("Destroyed game objects cannot be added to the game!");
+					}
 					_parent.addChild(this);
+				}
+				bool isActive = InHierarchy ();
+				if (wasActive && !isActive) {
+					UnSubscribe ();
+				} else if (!wasActive && isActive) {
+					Subscribe ();
 				}
 			}
 		}
+
+		private void Subscribe() {
+			game.Add (this);
+			foreach (GameObject child in _children) {
+				child.Subscribe ();
+			}
+		}
 		
+		private void UnSubscribe() {
+			game.Remove (this);
+			foreach (GameObject child in _children) {
+				child.UnSubscribe ();
+			}
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														AddChild()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -249,16 +273,30 @@ namespace GXPEngine
 		//														HasChild()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns 'true' if the specified object is a child of this object.
+		/// Returns 'true' if the specified object is a descendant of this object.
 		/// </summary>
 		/// <param name='gameObject'>
 		/// The GameObject that should be tested.
 		/// </param>
 		public bool HasChild(GameObject gameObject) {
+			// for compatibility reasons, the name of this method is not changed - but it is very confusing!
 			GameObject par = gameObject;
 			while (par != null) {
 				if (par == this) return true;
 				par = par.parent;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Returns whether this game object is currently active, or equivalently, a descendant of Game.
+		/// </summary>
+		public bool InHierarchy() {
+			GameObject current = parent;
+			while (current != null) {
+				if (current is Game)
+					return true;
+				current = current.parent;
 			}
 			return false;
 		}
@@ -295,7 +333,9 @@ namespace GXPEngine
 			_children.Remove(child);
 			_children.Insert(index, child);
 		}
-		
+
+
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HitTest()
 		//------------------------------------------------------------------------------------------------------------------------
