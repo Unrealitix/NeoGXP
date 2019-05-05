@@ -26,6 +26,13 @@ namespace GXPEngine.Core
 			normal = new Vector2 ();
 			return float.MaxValue;
 		}
+
+		public virtual bool GetCollisionInfo (Collider other, out Vector2 normal, out Vector2 point, out float shallowestIntersection) {
+			normal = new Vector2 ();
+			point = new Vector2 ();
+			shallowestIntersection = 0;
+			return false;
+		}			
 	}
 }
 

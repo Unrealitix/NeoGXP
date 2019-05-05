@@ -328,9 +328,14 @@ namespace GXPEngine
 			if (_collider == null || other._collider == null || parent==null)
 				return float.MaxValue;
 			// Compute world space velocity:
-			Vector2 p1 = parent.TransformPoint (vx, vy);
-			Vector2 p0 = parent.TransformPoint (0, 0);
-			float TOI=_collider.TimeOfImpact (other._collider, p1.x-p0.x, p1.y-p0.y, out normal);
+			//Vector2 p1 = parent.TransformPoint (vx, vy);
+			//Vector2 p0 = parent.TransformPoint (0, 0);
+			Vector2 worldVelocity=parent.TransformDirection(vx,vy);
+			float TOI=_collider.TimeOfImpact (other._collider, 
+				//p1.x-p0.x, p1.y-p0.y, 
+				worldVelocity.x,worldVelocity.y,
+				out normal
+			);
 			return TOI;
 		}
 
@@ -418,6 +423,15 @@ namespace GXPEngine
 			}
 		}
 
+		public override Vector2 TransformDirection(float x, float y) {
+			Vector2 ret = base.TransformDirection (x, y);
+			if (parent == null) {
+				return ret;
+			} else {
+				return parent.TransformDirection (ret.x, ret.y);
+			}
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//												InverseTransformPoint()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -437,6 +451,15 @@ namespace GXPEngine
 				return ret;
 			} else {
 				return parent.InverseTransformPoint (ret.x, ret.y);
+			}
+		}
+
+		public override Vector2 InverseTransformDirection(float x, float y) {
+			Vector2 ret = base.InverseTransformDirection (x, y);
+			if (parent == null) {
+				return ret;
+			} else {
+				return parent.InverseTransformDirection (ret.x, ret.y);
 			}
 		}
 
