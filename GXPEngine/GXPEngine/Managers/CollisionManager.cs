@@ -9,6 +9,7 @@ namespace GXPEngine
 	//------------------------------------------------------------------------------------------------------------------------
 	public class CollisionManager
 	{
+		public static bool SafeCollisionLoop=true;
 		
 		private delegate void CollisionDelegate(GameObject gameObject);
 		
@@ -31,7 +32,9 @@ namespace GXPEngine
 		private List<GameObject> colliderList = new List<GameObject>();
 		private List<ColliderInfo> activeColliderList = new List<ColliderInfo>();
 		private Dictionary<GameObject, ColliderInfo> _collisionReferences = new Dictionary<GameObject, ColliderInfo>();
-				
+			
+		private bool collisionLoopActive = false;
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														CollisionManager()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -43,6 +46,7 @@ namespace GXPEngine
 		//														Step()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Step() {
+			collisionLoopActive = SafeCollisionLoop;
 			for (int i=activeColliderList.Count-1; i>= 0; i--) {
 				ColliderInfo info = activeColliderList[i];
 				for (int j=colliderList.Count-1; j>=0; j--) {
@@ -57,6 +61,7 @@ namespace GXPEngine
 					}
 				}
 			}
+			collisionLoopActive = false;
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -81,6 +86,9 @@ namespace GXPEngine
 		//														Add()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Add(GameObject gameObject) {
+			if (collisionLoopActive) {
+				throw new Exception ("Cannot call AddChild for gameobjects during OnCollision - use LateAddChild instead.");
+			}
 			if (gameObject.collider != null && !colliderList.Contains (gameObject)) {
 				colliderList.Add(gameObject);
 			}
@@ -115,6 +123,9 @@ namespace GXPEngine
 		//														Remove()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Remove(GameObject gameObject) {
+			if (collisionLoopActive) {
+ 				throw new Exception ("Cannot destroy or remove gameobjects during OnCollision - use LateDestroy instead.");
+			}
 			colliderList.Remove(gameObject);
 			if (_collisionReferences.ContainsKey(gameObject)) {
 				ColliderInfo colliderInfo = _collisionReferences[gameObject];
