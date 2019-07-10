@@ -25,9 +25,11 @@ namespace GXPEngine
 		/// Since GameObjects contain a display hierarchy, a GameObject can be used as a container for other objects.
 		/// Other objects can be added using child commands as AddChild.
 		/// </summary>
-		public GameObject()
+		public GameObject(bool addCollider=false)
 		{
-			_collider = createCollider();
+			if (addCollider) {
+				_collider = createCollider ();
+			}
 			if (Game.main != null) Game.main.Add(this);
 		}
 
