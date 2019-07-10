@@ -342,40 +342,43 @@ namespace GXPEngine
 		/// <summary>
 		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
 		/// until it collides with one of the given objects. 
-		/// In case of a collision, the returned vector is the collision normal.
-		/// Otherwise it is (0,0).
+		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
+		/// (the point and penetration depth fields of the collision object will always be zero).
+		/// Otherwise it returns null.
 		/// </summary>
-		virtual public Vector2 MoveUntilCollision(float vx, float vy, GameObject[] objectsToCheck) {
-			Vector2 normal = new Vector2 ();
+		virtual public Collision MoveUntilCollision(float vx, float vy, GameObject[] objectsToCheck) {
+			Collision col = null;
+			//Vector2 normal = new Vector2 ();
 			if (objectsToCheck.Length == 0) {
 				x += vx;
 				y += vy;
-				return normal;
+				return col;
 			}
 			float minTOI = 1;
 			foreach (GameObject other in objectsToCheck) {
 				Vector2 newNormal;
 				float newTOI = TimeOfImpact (other, vx, vy, out newNormal);
 				if (newTOI < minTOI) {
-					normal = newNormal;
+					col = new Collision (this, other, newNormal, newTOI);
 					minTOI = newTOI;
 				}
 			}
 			x += vx * minTOI;
 			y += vy * minTOI;
-			return normal;
+			return col;
 		}
 
 		/// <summary>
 		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
 		/// until it collides with another object. 
-		/// In case of a collision, the returned vector is the collision normal.
-		/// Otherwise it is (0,0).
+		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
+		/// (the point and penetration depth fields of the collision object will always be zero).
+		/// Otherwise it returns null.
 		/// 
-		/// Note: this is a very expensive method since it uses GetCollisions - use with care.
+		/// Note: this is a very expensive method since it uses GetCollisions, and 
+		/// tunneling is possible since it uses discrete collision detection - use with care.
 		/// </summary>
-		virtual public Vector2 MoveUntilCollision(float vx, float vy) {
-			// using discrete collision detection (tunneling possible):
+		virtual public Collision MoveUntilCollision(float vx, float vy) {
 			x += vx;
 			y += vy;
 			GameObject[] overlaps = GetCollisions ();
