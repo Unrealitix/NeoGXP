@@ -27,18 +27,18 @@ namespace GXPEngine
 		/// <param name='height'>
 		/// Height of the canvas in pixels.
 		/// </param>
-		public Canvas (int width, int height) : this(new Bitmap (width, height))
+		public Canvas (int width, int height, bool addCollider=true) : this(new Bitmap (width, height), addCollider)
 		{
 			name = width + "x" + height;
 		}
 
-		public Canvas (System.Drawing.Bitmap bitmap) : base (bitmap)
+		public Canvas (System.Drawing.Bitmap bitmap, bool addCollider=true) : base (bitmap,addCollider)
 		{
 			_graphics = Graphics.FromImage(bitmap);
 			_invalidate = true;
 		}
 
-		public Canvas(string filename):base(filename)
+		public Canvas(string filename, bool addCollider=true):base(filename,addCollider)
 		{
 			_graphics = Graphics.FromImage(texture.bitmap);
 			_invalidate = true;

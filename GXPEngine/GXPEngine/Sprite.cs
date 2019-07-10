@@ -27,7 +27,7 @@ namespace GXPEngine
 		/// <param name='bitmap'>
 		/// Bitmap.
 		/// </param>
-		public Sprite (System.Drawing.Bitmap bitmap)
+		public Sprite (System.Drawing.Bitmap bitmap, bool addCollider=true) : base(addCollider)
 		{
 			if (Game.main == null) {
 				throw new Exception ("Sprites cannot be created before creating a Game instance.");
@@ -55,7 +55,7 @@ namespace GXPEngine
 		/// <param name='filename'>
 		/// The name of the file that should be loaded.
 		/// </param>
-		public Sprite (string filename, bool keepInCache=false)
+		public Sprite (string filename, bool keepInCache=false, bool addCollider=true) : base(addCollider)
 		{
 			if (Game.main == null) {
 				throw new Exception ("Sprites cannot be created before creating a Game instance.");
