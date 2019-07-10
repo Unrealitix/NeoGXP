@@ -115,6 +115,14 @@ namespace GXPEngine
 			return ret;
 		}
 
+		public virtual Vector2 InverseTransformDirection (float x, float y)
+		{
+			Vector2 ret = new Vector2 ();
+			if (_scaleX != 0) ret.x = ((x * _matrix[0] + y * _matrix[1]) / _scaleX); else ret.x = 0;
+			if (_scaleY != 0) ret.y = ((x * _matrix[4] + y * _matrix[5]) / _scaleY); else ret.y = 0;
+			return ret;
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														DistanceTo()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -151,7 +159,12 @@ namespace GXPEngine
 			return ret;
 		}
 
-
+		public virtual Vector2 TransformDirection(float x, float y) {
+			Vector2 ret = new Vector2();
+			ret.x = (_matrix[0] * x * _scaleX + _matrix[4] * y * _scaleY);
+			ret.y = (_matrix[1] * x * _scaleX + _matrix[5] * y * _scaleY);
+			return ret;
+		}
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Rotation

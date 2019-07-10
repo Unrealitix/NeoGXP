@@ -407,6 +407,81 @@ namespace GXPEngine
 			return _collider != null && other._collider != null && _collider.HitTest (other._collider);
 		}
 
+		/// <summary>
+		/// If changing the x and y coordinates of this GameObject by vx and vy respectively
+		///   would cause a collision with the GameObject other, this method returns a 
+		///   "time of impact" between 0 and 1,
+		///   which is a scalar multiplier for vx and vy, giving the amount of safe movement until collision.
+		/// It is zero if the two game objects are already overlapping, and 
+		///   moving by vx and vy would cause a worse overlap.
+		/// In all other cases, the returned value is bigger than 1.
+		/// If a time of impact below 1 is returned, the normal will be the collision normal 
+		///   (otherwise it is undefined).
+		/// </summary>
+		virtual public float TimeOfImpact (GameObject other, float vx, float vy, out Vector2 normal) {
+			normal = new Vector2 ();
+			if (_collider == null || other._collider == null || parent==null)
+				return float.MaxValue;
+			// Compute world space velocity:
+			//Vector2 p1 = parent.TransformPoint (vx, vy);
+			//Vector2 p0 = parent.TransformPoint (0, 0);
+			Vector2 worldVelocity=parent.TransformDirection(vx,vy);
+			float TOI=_collider.TimeOfImpact (other._collider, 
+				//p1.x-p0.x, p1.y-p0.y, 
+				worldVelocity.x,worldVelocity.y,
+				out normal
+			);
+			return TOI;
+		}
+
+		/// <summary>
+		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
+		/// until it collides with one of the given objects. 
+		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
+		/// (the point and penetration depth fields of the collision object will always be zero).
+		/// Otherwise it returns null.
+		/// </summary>
+		virtual public Collision MoveUntilCollision(float vx, float vy, GameObject[] objectsToCheck) {
+			Collision col = null;
+			//Vector2 normal = new Vector2 ();
+			if (objectsToCheck.Length == 0) {
+				x += vx;
+				y += vy;
+				return col;
+			}
+			float minTOI = 1;
+			foreach (GameObject other in objectsToCheck) {
+				Vector2 newNormal;
+				float newTOI = TimeOfImpact (other, vx, vy, out newNormal);
+				if (newTOI < minTOI) {
+					col = new Collision (this, other, newNormal, newTOI);
+					minTOI = newTOI;
+				}
+			}
+			x += vx * minTOI;
+			y += vy * minTOI;
+			return col;
+		}
+
+		/// <summary>
+		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
+		/// until it collides with another object. 
+		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
+		/// (the point and penetration depth fields of the collision object will always be zero).
+		/// Otherwise it returns null.
+		/// 
+		/// Note: this is a very expensive method since it uses GetCollisions, and 
+		/// tunneling is possible since it uses discrete collision detection - use with care.
+		/// </summary>
+		virtual public Collision MoveUntilCollision(float vx, float vy) {
+			x += vx;
+			y += vy;
+			GameObject[] overlaps = GetCollisions ();
+			x -= vx;
+			y -= vy;
+			return MoveUntilCollision (vx, vy, overlaps);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HitTestPoint()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -446,6 +521,15 @@ namespace GXPEngine
 			}
 		}
 
+		public override Vector2 TransformDirection(float x, float y) {
+			Vector2 ret = base.TransformDirection (x, y);
+			if (parent == null) {
+				return ret;
+			} else {
+				return parent.TransformDirection (ret.x, ret.y);
+			}
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//												InverseTransformPoint()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -465,6 +549,15 @@ namespace GXPEngine
 				return ret;
 			} else {
 				return parent.InverseTransformPoint (ret.x, ret.y);
+			}
+		}
+
+		public override Vector2 InverseTransformDirection(float x, float y) {
+			Vector2 ret = base.InverseTransformDirection (x, y);
+			if (parent == null) {
+				return ret;
+			} else {
+				return parent.InverseTransformDirection (ret.x, ret.y);
 			}
 		}
 
