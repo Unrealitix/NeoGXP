@@ -5,9 +5,11 @@ using System;
 struct GameObjectPair {
 	public GameObject parent;
 	public GameObject child;
-	public GameObjectPair(GameObject pParent,GameObject pChild) {
+	public int index;
+	public GameObjectPair(GameObject pParent,GameObject pChild, int pIndex=-1) {
 		parent = pParent;
 		child = pChild;
+		index = pIndex;
 	}
 }
 
@@ -33,6 +35,7 @@ namespace GXPEngine {
 
 		private List<GameObjectPair> toAdd;
 		private List<GameObject> toDestroy;
+		private List<GameObject> toRemove;
 		private List<Action> toCall;
 
 		// Don't construct these yourself - get the one HierarchyManager using HierarchyManager.Instance
@@ -40,15 +43,20 @@ namespace GXPEngine {
 			Game.main.OnAfterStep += UpdateHierarchy;
 			toAdd = new List<GameObjectPair> ();
 			toDestroy = new List<GameObject> ();
+			toRemove = new List<GameObject> ();
 			toCall = new List<Action> ();
 		}
 
-		public void LateAdd(GameObject parent, GameObject child) {
-			toAdd.Add (new GameObjectPair(parent,child));
+		public void LateAdd(GameObject parent, GameObject child, int index=-1) {
+			toAdd.Add (new GameObjectPair(parent,child,index));
 		}
 
 		public void LateDestroy(GameObject obj) {
 			toDestroy.Add (obj);
+		}
+
+		public void LateRemove(GameObject obj) {
+			toRemove.Add (obj);
 		}
 
 		public bool IsOnDestroyList(GameObject obj) {
@@ -61,7 +69,11 @@ namespace GXPEngine {
 
 		public void UpdateHierarchy() {
 			foreach (GameObjectPair pair in toAdd) {
-				pair.parent.AddChild (pair.child);
+				if (pair.index >= 0) {
+					pair.parent.AddChildAt (pair.child, pair.index);
+				} else {
+					pair.parent.AddChild (pair.child);
+				}
 			}
 			toAdd.Clear ();
 
@@ -69,6 +81,11 @@ namespace GXPEngine {
 				obj.Destroy ();
 			}
 			toDestroy.Clear ();
+
+			foreach (GameObject obj in toRemove) {
+				obj.Remove ();
+			}
+			toRemove.Clear ();
 
 			// This type of loop supports calling LateCall from within the loop:
 			for (int i = 0; i < toCall.Count; i++) {

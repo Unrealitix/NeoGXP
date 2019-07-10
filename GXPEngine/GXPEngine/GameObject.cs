@@ -224,6 +224,23 @@ namespace GXPEngine
 			HierarchyManager.Instance.LateAdd (this, child);
 		}
 
+		/// <summary>
+		/// Removes this GameObject from the hierarchy (=sets the parent to null).
+		/// </summary>
+		public void Remove() {
+			parent = null;
+		}
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														LateDestroy()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Removes this GameObject from the hierarchy, *after* finishing the current Update + OnCollision loops.
+		/// </summary>
+		public void LateRemove() {
+			HierarchyManager.Instance.LateRemove (this);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														RemoveChild()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -280,7 +297,18 @@ namespace GXPEngine
 			_children.Remove(child);
 			_children.Insert(index, child);			
 		}
-		
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														LateAddChild()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Adds the specified GameObject as a child to this one, at the specified index,
+		/// *after* finishing the current Update + OnCollision loops.
+		/// </summary>
+		public void LateAddChildAt(GameObject child, int index) {
+			HierarchyManager.Instance.LateAdd (this, child, index);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HasChild()
 		//------------------------------------------------------------------------------------------------------------------------

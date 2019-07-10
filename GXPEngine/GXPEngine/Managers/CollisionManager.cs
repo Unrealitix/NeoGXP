@@ -124,7 +124,7 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Remove(GameObject gameObject) {
 			if (collisionLoopActive) {
- 				throw new Exception ("Cannot destroy or remove gameobjects during OnCollision - use LateDestroy instead.");
+ 				throw new Exception ("Cannot destroy or remove gameobjects during OnCollision - use LateDestroy or LateRemove instead.");
 			}
 			colliderList.Remove(gameObject);
 			if (_collisionReferences.ContainsKey(gameObject)) {
