@@ -16,6 +16,7 @@ namespace GXPEngine
 		private GameObject _parent = null;
 		
 		public bool visible = true;
+		private bool destroyed = false;
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GameObject()
@@ -28,7 +29,7 @@ namespace GXPEngine
 		public GameObject()
 		{
 			_collider = createCollider();
-			if (Game.main != null) Game.main.Add(this);
+			//if (Game.main != null) Game.main.Add(this);
 		}
 
 		/// <summary>
@@ -77,38 +78,6 @@ namespace GXPEngine
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
-		//														OnDestroy()
-		//------------------------------------------------------------------------------------------------------------------------
-		//subclasses can use this call to clean up resources once on destruction
-		protected virtual void OnDestroy ()
-		{
-			//empty
-		}
-				
-		//------------------------------------------------------------------------------------------------------------------------
-		//														Destroy()
-		//------------------------------------------------------------------------------------------------------------------------
-		/// <summary>
-		/// Destroy this instance, and removes it from the game. To complete garbage collection, you must nullify all 
-		/// your own references to this object.
-		/// </summary>
-		public virtual void Destroy ()
-		{
-			if (!game.Contains (this)) return;
-			OnDestroy();
-
-			//detach all children
-			while (_children.Count > 0) {
-				GameObject child = _children[0];
-				if (child != null) child.Destroy();
-			}
-			//detatch from parent
-			if (parent != null) parent = null;
-			//remove from game
-			if (Game.main != null) Game.main.Remove (this);
-		}
-
-		//------------------------------------------------------------------------------------------------------------------------
 		//														Render
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
@@ -153,7 +122,9 @@ namespace GXPEngine
 			//glContext.PushMatrix(matrix);
 			//glContext.PopMatrix();
 		}
-		
+
+
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														parent
 		//------------------------------------------------------------------------------------------------------------------------
@@ -164,17 +135,69 @@ namespace GXPEngine
 		public GameObject parent {
 			get { return _parent; }
 			set { 
+				bool wasActive = InHierarchy ();
 				if (_parent != null) {
 					_parent.removeChild(this);
 					_parent = null;
 				}
 				_parent = value;
 				if (value != null) {
+					if (destroyed) {
+						throw new Exception ("Destroyed game objects cannot be added to the game!");
+					}
 					_parent.addChild(this);
+				}
+				bool isActive = InHierarchy ();
+				if (wasActive && !isActive) {
+					UnSubscribe ();
+				} else if (!wasActive && isActive) {
+					Subscribe ();
 				}
 			}
 		}
-		
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														OnDestroy()
+		//------------------------------------------------------------------------------------------------------------------------
+		//subclasses can use this call to clean up resources once on destruction
+		protected virtual void OnDestroy ()
+		{
+			//empty
+		}
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														Destroy()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Destroy this instance, and removes it from the game. To complete garbage collection, you must nullify all 
+		/// your own references to this object.
+		/// </summary>
+		public virtual void Destroy ()
+		{
+			destroyed = true;
+			// Detach from parent (and thus remove it from the managers):
+			if (parent != null) parent = null;
+
+			OnDestroy();
+
+			// Destroy all children:
+			while (_children.Count > 0) {
+				GameObject child = _children[0];
+				if (child != null) child.Destroy();
+			}
+		}
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														LateDestroy()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Destroy this instance, and removes it from the game, *after* finishing the current Update + OnCollision loops.
+		/// To complete garbage collection, you must nullify all your own references to this object.
+		/// </summary>
+		public void LateDestroy() {
+			HierarchyManager.Instance.LateDestroy (this);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														AddChild()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -187,7 +210,37 @@ namespace GXPEngine
 		public void AddChild(GameObject child) {
 			child.parent = this;	
 		}
-		
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														LateAddChild()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Adds the specified GameObject as a child to this one, *after* finishing the current Update + OnCollision loops.
+		/// </summary>
+		/// <param name='child'>
+		/// Child object to add.
+		/// </param>
+		public void LateAddChild(GameObject child) {
+			HierarchyManager.Instance.LateAdd (this, child);
+		}
+
+		/// <summary>
+		/// Removes this GameObject from the hierarchy (=sets the parent to null).
+		/// </summary>
+		public void Remove() {
+			parent = null;
+		}
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														LateDestroy()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Removes this GameObject from the hierarchy, *after* finishing the current Update + OnCollision loops.
+		/// </summary>
+		public void LateRemove() {
+			HierarchyManager.Instance.LateRemove (this);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														RemoveChild()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -244,21 +297,46 @@ namespace GXPEngine
 			_children.Remove(child);
 			_children.Insert(index, child);			
 		}
-		
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														LateAddChild()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Adds the specified GameObject as a child to this one, at the specified index,
+		/// *after* finishing the current Update + OnCollision loops.
+		/// </summary>
+		public void LateAddChildAt(GameObject child, int index) {
+			HierarchyManager.Instance.LateAdd (this, child, index);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HasChild()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns 'true' if the specified object is a child of this object.
+		/// Returns 'true' if the specified object is a descendant of this object.
 		/// </summary>
 		/// <param name='gameObject'>
 		/// The GameObject that should be tested.
 		/// </param>
 		public bool HasChild(GameObject gameObject) {
+			// for compatibility reasons, the name of this method is not changed - but it is very confusing!
 			GameObject par = gameObject;
 			while (par != null) {
 				if (par == this) return true;
 				par = par.parent;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Returns whether this game object is currently active, or equivalently, a descendant of Game.
+		/// </summary>
+		public bool InHierarchy() {
+			GameObject current = parent;
+			while (current != null) {
+				if (current is Game)
+					return true;
+				current = current.parent;
 			}
 			return false;
 		}
@@ -295,7 +373,24 @@ namespace GXPEngine
 			_children.Remove(child);
 			_children.Insert(index, child);
 		}
-		
+
+		private void Subscribe() {
+			game.Add (this);
+			foreach (GameObject child in _children) {
+				child.Subscribe ();
+			}
+		}
+
+		private void UnSubscribe() {
+			game.Remove (this);
+			foreach (GameObject child in _children) {
+				child.UnSubscribe ();
+			}
+		}
+
+
+
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HitTest()
 		//------------------------------------------------------------------------------------------------------------------------

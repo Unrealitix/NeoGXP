@@ -17,7 +17,6 @@ namespace GXPEngine
 
 		private UpdateManager _updateManager;
 		private CollisionManager _collisionManager;
-		private List<GameObject> _gameObjectsContained;
 
 		/// <summary>
 		/// Step delegate defines the signature of a method used for step callbacks, see OnBeforeStep, OnAfterStep.
@@ -100,7 +99,6 @@ namespace GXPEngine
 				_collisionManager = new CollisionManager ();
 				_glContext = new GLContext (this);
 				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync, pRealWidth, pRealHeight);
-				_gameObjectsContained = new List<GameObject>();
 
 				_renderRange = new Rectangle (0, 0, pWidth, pHeight);
 
@@ -198,32 +196,25 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Add()
 		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Should only be called from the GameObject class!
+		/// </summary>
 		internal void Add (GameObject gameObject)
 		{
-			if (!_gameObjectsContained.Contains (gameObject)) {
-				_updateManager.Add (gameObject);
-				_collisionManager.Add (gameObject);
-				_gameObjectsContained.Add (gameObject);
-			}
+			_updateManager.Add (gameObject);
+			_collisionManager.Add (gameObject);
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Remove()
 		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Should only be called from the GameObject class!
+		/// </summary>
 		internal void Remove (GameObject gameObject)
 		{
-			if (_gameObjectsContained.Contains (gameObject)) {
-				_updateManager.Remove (gameObject);
-				_collisionManager.Remove (gameObject);
-				_gameObjectsContained.Remove (gameObject);
-			}
-		}
-
-		//------------------------------------------------------------------------------------------------------------------------
-		//														Contains()
-		//------------------------------------------------------------------------------------------------------------------------
-		public Boolean Contains(GameObject gameObject) {
-			return _gameObjectsContained.Contains(gameObject);
+			_updateManager.Remove (gameObject);
+			_collisionManager.Remove (gameObject);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -292,7 +283,6 @@ namespace GXPEngine
 
 		public string GetDiagnostics() {
 			string output = "";
-			output += "Number of game objects contained: "+_gameObjectsContained.Count+'\n';
 			output += "Number of objects in hierarchy: " + CountSubtreeSize (this)+'\n';
 			output += "OnBeforeStep delegates: "+(OnBeforeStep==null?0:OnBeforeStep.GetInvocationList().Length)+'\n';
 			output += "OnAfterStep delegates: "+(OnAfterStep==null?0:OnAfterStep.GetInvocationList().Length)+'\n';
