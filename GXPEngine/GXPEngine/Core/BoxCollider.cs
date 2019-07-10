@@ -253,16 +253,17 @@ namespace GXPEngine.Core
 		}
 
 
-		public override bool GetCollisionInfo (Collider other, out Vector2 normal, out Vector2 point, out float penetrationDepth) {
-			penetrationDepth = float.MaxValue;
-			normal = new Vector2 ();
-			point = new Vector2 ();
+		public override Collision GetCollisionInfo (Collider other) 
+		{
+			float penetrationDepth = float.MaxValue;
+			Vector2 normal=new Vector2();
+			Vector2 point=new Vector2();
 			if (other is BoxCollider) {
 				//Console.WriteLine ("\n\n===== Computing collision data:\n");
 				Vector2[] c = _owner.GetExtents();
-				if (c == null) return false;
+				if (c == null) return null;
 				Vector2[] d = ((BoxCollider)other)._owner.GetExtents();
-				if (d == null) return false;
+				if (d == null) return null;
 
 				//Console.WriteLine ("\nSide vectors of this:\n {0},{1} and {2},{3}",
 				//	c[1].x-c[0].x,c[1].y-c[0].y,c[3].x-c[0].x,c[3].y-c[0].y
@@ -275,7 +276,7 @@ namespace GXPEngine.Core
 					    c [0].x, c [0].y, nx, ny, 
 					    c [3].x - c [0].x, c [3].y - c [0].y, d,
 					    true, ref penetrationDepth, ref normal, ref point))
-					return false;
+					return null;
 
 				nx = c [0].y - c [3].y;
 				ny = c [3].x - c [0].x;
@@ -283,7 +284,7 @@ namespace GXPEngine.Core
 					c [0].x, c [0].y, nx, ny, 
 					c [1].x - c [0].x, c [1].y - c [0].y, d, 
 					true, ref penetrationDepth, ref normal, ref point))
-					return false;
+					return null;
 
 				//Console.WriteLine ("\nSide vectors of other:\n {0},{1} and {2},{3}",
 				//	d[1].x-d[0].x,d[1].y-d[0].y,d[3].x-d[0].x,d[3].y-d[0].y
@@ -295,7 +296,7 @@ namespace GXPEngine.Core
 					d [0].x, d [0].y, nx, ny, 
 					d [3].x - d [0].x, d [3].y - d [0].y, c, 
 					false, ref penetrationDepth, ref normal, ref point))
-					return false;
+					return null;
 
 				nx = d [0].y - d [3].y;
 				ny = d [3].x - d [0].x;
@@ -303,7 +304,7 @@ namespace GXPEngine.Core
 					d [0].x, d [0].y, nx, ny, 
 					d [1].x - d [0].x, d [1].y - d [0].y, c, 
 					false, ref penetrationDepth, ref normal, ref point))
-					return false;
+					return null;
 				/*
 				if (convertToParentSpace && _owner.parent!=null) {
 					normal = _owner.parent.InverseTransformPoint (normal.x, normal.y);
@@ -314,9 +315,9 @@ namespace GXPEngine.Core
 					point = _owner.parent.InverseTransformPoint (point.x, point.y);
 				}
 				*/
-				return true;
+				return new Collision(_owner, ((BoxCollider)other)._owner, normal, point, penetrationDepth);
 			} else {
-				return false;
+				return null;
 			}
 		}
 	

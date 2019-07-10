@@ -27,7 +27,7 @@
 		}
 
 		public Collision(GameObject pSelf, GameObject pOther, Vector2 pNormal, Vector2 pPoint, float pPenetrationDepth) :
-			this (pSelf, pOther, pNormal, pPoint, 0, 0)
+			this (pSelf, pOther, pNormal, pPoint, 0, pPenetrationDepth)
 		{
 		}			
 	}

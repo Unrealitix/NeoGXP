@@ -27,11 +27,16 @@ namespace GXPEngine.Core
 			return float.MaxValue;
 		}
 
-		public virtual bool GetCollisionInfo (Collider other, out Vector2 normal, out Vector2 point, out float shallowestIntersection) {
-			normal = new Vector2 ();
-			point = new Vector2 ();
-			shallowestIntersection = 0;
-			return false;
+		/// <summary>
+		/// If this collider and the collider other are overlapping, this method returns useful collision info such as
+		/// the collision normal, the point of impact, and the penetration depth, 
+		/// contained in a Collision object (the time of impact field will always be zero).
+		/// 
+		/// If they are not overlapping, this method returns null.
+		/// </summary>
+		public virtual Collision GetCollisionInfo (Collider other)
+		{
+			return null;
 		}			
 	}
 }
