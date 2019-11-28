@@ -36,6 +36,13 @@ namespace GXPEngine
 		/// <param name='frames'>
 		/// Optionally, indicate a number of frames. When left blank, defaults to width*height.
 		/// </param>
+		/// <param name="keepInCache">
+		/// If <c>true</c>, the sprite's texture will be kept in memory for the entire lifetime of the game. 
+		/// This takes up more memory, but removes load times.
+		/// </param> 
+		/// <param name="addCollider">
+		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
+		/// </param> 
 		public AnimationSprite (string filename, int cols, int rows, int frames=-1, bool keepInCache=false, bool addCollider=true) : base(filename,keepInCache,addCollider)
 		{
 			name = filename;
@@ -60,7 +67,10 @@ namespace GXPEngine
 		/// <param name='frames'>
 		/// Optionally, indicate a number of frames. When left blank, defaults to width*height.
 		/// </param>
-		public AnimationSprite (System.Drawing.Bitmap bitmap, int cols, int rows, int frames=-1) : base(bitmap)
+		/// <param name="addCollider">
+		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
+		/// </param> 
+		public AnimationSprite (System.Drawing.Bitmap bitmap, int cols, int rows, int frames=-1, bool addCollider=true) : base(bitmap,addCollider)
 		{
 			name = "BMP " + bitmap.Width + "x" + bitmap.Height;
 			initializeAnimFrames(cols, rows, frames);

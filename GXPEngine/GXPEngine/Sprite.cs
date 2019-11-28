@@ -27,6 +27,9 @@ namespace GXPEngine
 		/// <param name='bitmap'>
 		/// Bitmap.
 		/// </param>
+		/// <param name="addCollider">
+		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
+		/// </param> 
 		public Sprite (System.Drawing.Bitmap bitmap, bool addCollider=true) : base(addCollider)
 		{
 			if (Game.main == null) {
@@ -55,6 +58,13 @@ namespace GXPEngine
 		/// <param name='filename'>
 		/// The name of the file that should be loaded.
 		/// </param>
+		/// <param name="keepInCache">
+		/// If <c>true</c>, the sprite's texture will be kept in memory for the entire lifetime of the game. 
+		/// This takes up more memory, but removes load times.
+		/// </param> 
+		/// <param name="addCollider">
+		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
+		/// </param> 
 		public Sprite (string filename, bool keepInCache=false, bool addCollider=true) : base(addCollider)
 		{
 			if (Game.main == null) {

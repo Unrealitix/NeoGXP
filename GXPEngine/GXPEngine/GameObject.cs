@@ -26,6 +26,10 @@ namespace GXPEngine
 		/// Since GameObjects contain a display hierarchy, a GameObject can be used as a container for other objects.
 		/// Other objects can be added using child commands as AddChild.
 		/// </summary>
+		/// <param name="addCollider">
+		/// If <c>true</c>, then the virtual function createCollider will be called, which can be overridden to create a collider that 
+		/// will be added to the collision manager. 
+		/// </param> 
 		public GameObject(bool addCollider=false)
 		{
 			if (addCollider) {
@@ -34,7 +38,7 @@ namespace GXPEngine
 		}
 
 		/// <summary>
-		/// Return the collider to use for this game object, null is allowed 
+		/// Create and return a collider to use for this game object. Null is allowed.
 		/// </summary>
 		protected virtual Collider createCollider () {
 			return null;
@@ -160,7 +164,10 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		//														OnDestroy()
 		//------------------------------------------------------------------------------------------------------------------------
-		//subclasses can use this call to clean up resources once on destruction
+		/// <summary>
+		/// Subclasses can implement this method to clean up resources once on destruction. 
+		/// Will be called by the engine when the game object is destroyed.
+		/// </summary>
 		protected virtual void OnDestroy ()
 		{
 			//empty
@@ -281,7 +288,7 @@ namespace GXPEngine
 		/// <summary>
 		/// Adds the specified GameObject as a child to this object at an specified index. 
 		/// This will alter the position of other objects as well.
-		/// You can use this to determine the layer order (z-order) of child objects.
+		/// You can use this to determine the draw order of child objects.
 		/// </summary>
 		/// <param name='child'>
 		/// Child object to add.
@@ -348,6 +355,7 @@ namespace GXPEngine
 		/// <summary>
 		/// Returns a list of all children that belong to this object.
 		/// The function returns System.Collections.Generic.List<GameObject>.
+		/// NOTE: Never change this list directly yourself!
 		/// </summary>
 		public List<GameObject> GetChildren() {
 			return _children;
@@ -359,7 +367,7 @@ namespace GXPEngine
 		/// <summary>
 		/// Inserts the specified object in this object's child list at given location.
 		/// This will alter the position of other objects as well.
-		/// You can use this to determine the layer order (z-order) of child objects.
+		/// You can use this to determine the drawing order of child objects.
 		/// </summary>
 		/// <param name='child'>
 		/// Child.
@@ -389,20 +397,17 @@ namespace GXPEngine
 			}
 		}
 
-
-
-
 		//------------------------------------------------------------------------------------------------------------------------
 		//														HitTest()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests if this object overlaps the one specified. 
+		/// Tests if this object overlaps with the one specified. 
 		/// </summary>
 		/// <returns>
-		/// <c>true</c>, if test was hit, <c>false</c> otherwise.
+		/// <c>true</c>, if 'this' overlaps with 'other'.
 		/// </returns>
 		/// <param name='other'>
-		/// Other.
+		/// The other game object.
 		/// </param>
 		virtual public bool HitTest(GameObject other) {
 			return _collider != null && other._collider != null && _collider.HitTest (other._collider);
@@ -487,7 +492,7 @@ namespace GXPEngine
 		//														HitTestPoint()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns 'true' if a 2D point overlaps this object, false otherwise
+		/// Returns <c>true</c> if a 2D point (given in global / screen space) overlaps with this object.
 		/// You could use this for instance to check if the mouse (Input.mouseX, Input.mouseY) is over the object.
 		/// </summary>
 		/// <param name='x'>
@@ -504,7 +509,7 @@ namespace GXPEngine
 		//														TransformPoint()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Transforms the point from local to global space.
+		/// Transforms a point from local to global space.
 		/// If you insert a point relative to the object, it will return that same point relative to the game.
 		/// </summary>
 		/// <param name='x'>
@@ -522,6 +527,17 @@ namespace GXPEngine
 			}
 		}
 
+		/// <summary>
+		/// Transforms a direction vector from local to global space.
+		/// If you insert a vector relative to the object, it will return that same vector relative to the game.
+		/// Note: only scale and rotation information are taken into account, not translation (coordinates).
+		/// </summary>
+		/// <param name='x'>
+		/// The x coordinate to transform.
+		/// </param>
+		/// <param name='y'>
+		/// The y coordinate to transform.
+		/// </param>
 		public override Vector2 TransformDirection(float x, float y) {
 			Vector2 ret = base.TransformDirection (x, y);
 			if (parent == null) {
@@ -536,7 +552,7 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// Transforms the point from global into local space.
-		/// If you insert a point relative to the stage, it will return that same point relative to this GameObject.
+		/// If you insert a point relative to the game, it will return that same point relative to this GameObject.
 		/// </summary>
 		/// <param name='x'>
 		/// The x coordinate to transform.
@@ -553,6 +569,17 @@ namespace GXPEngine
 			}
 		}
 
+		/// <summary>
+		/// Transforms the vector from global into local space.
+		/// If you insert a vector relative to the game, it will return that same vector relative to this GameObject.
+		/// Note: only scale and rotation information are taken into account, not translation (coordinates).
+		/// </summary>
+		/// <param name='x'>
+		/// The x coordinate to transform.
+		/// </param>
+		/// <param name='y'>
+		/// The y coordinate to transform.
+		/// </param>
 		public override Vector2 InverseTransformDirection(float x, float y) {
 			Vector2 ret = base.InverseTransformDirection (x, y);
 			if (parent == null) {

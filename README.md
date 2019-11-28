@@ -1,5 +1,7 @@
 # GXPEngine #
 
+Last update: 28-11-2019
+
 This is the GXPEngine. It's used for learning about game development at Saxion University of Applied Sciences.
 
 ### How do I get set up? ###
@@ -9,7 +11,7 @@ This is the GXPEngine. It's used for learning about game development at Saxion U
 
 ### Possible improvements (actively) being worked on ###
 
-* Replace FMOD with something open source/open licensed -> SoLoud
+* Replace FMODEX with something open source/open licensed -> SoLoud
 * Make full screen crashes function better
 
 ### I have some ideas for new features! Who do I talk to? ###

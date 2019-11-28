@@ -115,6 +115,10 @@ namespace GXPEngine
 			return ret;
 		}
 
+		/// <summary>
+		/// Transforms the direction vector (x,y) from the game's global space to this object's local space.
+		/// This means that rotation and scaling is applied, but translation is not.
+		/// </summary>
 		public virtual Vector2 InverseTransformDirection (float x, float y)
 		{
 			Vector2 ret = new Vector2 ();
@@ -159,6 +163,10 @@ namespace GXPEngine
 			return ret;
 		}
 
+		/// <summary>
+		/// Transforms a direction vector (x,y) from this object's local space to the game's global space. 
+		/// This means that rotation and scaling is applied, but translation is not.
+		/// </summary>
 		public virtual Vector2 TransformDirection(float x, float y) {
 			Vector2 ret = new Vector2();
 			ret.x = (_matrix[0] * x * _scaleX + _matrix[4] * y * _scaleY);
