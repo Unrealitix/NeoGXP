@@ -65,8 +65,9 @@ namespace GXPEngine
 
 		internal static void Step() 
 		{
-			//if (_system != 0) 
-			FMOD.System_Update(_system);
+			if (_system != 0) {
+				FMOD.System_Update (_system);
+			}
 		}
 		
 		/// <summary>
