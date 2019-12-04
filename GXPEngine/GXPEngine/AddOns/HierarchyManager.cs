@@ -19,6 +19,7 @@ namespace GXPEngine {
 	/// you can use this class to do this more cleanly: when using 
 	/// HierarchyManager.Instance.LateDestroy,
 	/// all these hierarchy changes will be made after the update loop is finished.
+	/// You can also use HierarchyManager.Instance.LateAdd to add a game object after the update loop is finished.
 	/// Similarly, you can use HierarchyManager.Instance.LateCall to postpone a certain method call until 
 	/// after the update loop.
 	/// </summary>
@@ -38,7 +39,7 @@ namespace GXPEngine {
 		private List<GameObject> toRemove;
 		private List<Action> toCall;
 
-		// Don't construct these yourself - get the one HierarchyManager using HierarchyManager.Instance
+		// Private constructor: don't construct these yourself - get the one HierarchyManager using HierarchyManager.Instance
 		HierarchyManager() {
 			Game.main.OnAfterStep += UpdateHierarchy;
 			toAdd = new List<GameObjectPair> ();
