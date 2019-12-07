@@ -70,9 +70,14 @@
     <Compile Include="GXPEngine\AddOns\Window.cs" />
     <Compile Include="GXPEngine\AddOns\EasyDraw.cs" />
     <Compile Include="GXPEngine\Core\Collision.cs" />
+    <Compile Include="GXPEngine\Core\SoundSystem.cs" />
+    <Compile Include="GXPEngine\FMOD\FMODSoundSystem.cs" />
+    <Compile Include="GXPEngine\SoLoud\Soloud.cs" />
+    <Compile Include="GXPEngine\SoLoud\SoloudSoundSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GXPEngine\" />
     <Folder Include="GXPEngine\AddOns\" />
+    <Folder Include="GXPEngine\SoLoud\" />
   </ItemGroup>
 </Project>
