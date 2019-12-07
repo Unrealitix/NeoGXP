@@ -65,6 +65,9 @@ namespace GXPEngine.Core {
         {
             get
             {
+				if (_soundSystem == null) {
+					InitializeSoundSystem ();
+				}
                 return _soundSystem;
             }
         }
@@ -128,13 +131,16 @@ namespace GXPEngine.Core {
 					Game.main.RenderRange=new Rectangle(0,0,WindowSize.instance.width,WindowSize.instance.height);
 				}
 			});
+			InitializeSoundSystem ();
+		}
 
+		private static void InitializeSoundSystem() {
 #if USE_FMOD_AUDIO
-            _soundSystem = new FMODSoundSystem();
+			_soundSystem = new FMODSoundSystem();
 #else
-            _soundSystem = new SoloudSoundSystem();
+			_soundSystem = new SoloudSoundSystem();
 #endif
-            _soundSystem.Init();
+			_soundSystem.Init();
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
