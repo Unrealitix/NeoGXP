@@ -115,3 +115,5 @@ FEATURES:
 * Adding the option to *only* render using camera's. (game.RenderMain=false)
 * All Sprite (sub)classes now have an optional argument for adding a collider or not (default = true). Now the option to not add a collider is not quite as
 hidden, and doesn't require subclassing.
+
+* (BHO03:) Supporting SoLoud as audio backend on Windows and Mac, both 32 and 64 bit.

@@ -11,8 +11,7 @@ This is the GXPEngine. It's used for learning about game development at Saxion U
 
 ### Possible improvements (actively) being worked on ###
 
-* Replace FMODEX with something open source/open licensed -> SoLoud
-* Make full screen crashes function better
+* Test: .NET core instead of Mono?
 
 ### I have some ideas for new features! Who do I talk to? ###
 
