@@ -66,6 +66,16 @@ namespace GXPEngine.Core
             return outId;
         }
 
+		public override uint PlaySound(IntPtr id, uint channelId, bool paused, float volume, float pan)
+		{
+			uint outId;
+			FMOD.System_PlaySound(GetSystem(), channelId, id, true, out outId);
+			SetChannelVolume (outId, volume);
+			SetChannelPan (outId, pan);
+			SetChannelPaused (outId, paused);
+			return outId;
+		}
+
         public override float GetChannelFrequency(uint channelId)
         {
 			float frequency;
