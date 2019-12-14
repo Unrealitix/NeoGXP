@@ -13,6 +13,12 @@ namespace GXPEngine
         private float _volume = 1f;
         private bool _isMuted = false;
 
+		public uint ID {
+			get {
+				return _id;
+			}
+		}
+
         public SoundChannel( uint id )
 		{
             _system = GLContext.soundSystem;

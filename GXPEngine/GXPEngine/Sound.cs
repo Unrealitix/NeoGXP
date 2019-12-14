@@ -1,4 +1,4 @@
-﻿//#define USE_FMOD_AUDIO
+﻿#define USE_FMOD_AUDIO
 
 using System;
 using System.Threading;
@@ -84,6 +84,10 @@ namespace GXPEngine
             {
                 throw new Exception("Channel ID is not supported when using SoLoud audio. Please change #define in GLContext.cs!");
             }
+#else
+			if (channelId==0) {
+				channelId=4294967295; // -1 basically (since FMOD actually works with ints), which means: pick a free channel.
+			}
 #endif
             uint channelID = _system.PlaySound(_id, channelId, paused);
             SoundChannel soundChannel = new SoundChannel( channelID );
