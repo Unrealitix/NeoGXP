@@ -107,6 +107,9 @@ BUG FIXES / BUG PREVENTION:
    Use LateDestroy / LateAddChild etc. instead. 
    (For old projects that now give exceptions: you can turn off this functionality using CollisionManager.SafeCollisionLoop=false)
 
+* GameObject.GetChildren is now safe by default (clone list)
+* Sound.Play has volume & pan parameter: now SoLoud can also play with different volume and pan.   
+   
 FEATURES:
 * TiledParser: adding a method that converts the string data (innerXML) to a 2-dimensional array of integers.
 * Added "MoveUntilCollision" method for GameObjects (plus helper methods).
