@@ -387,7 +387,13 @@ namespace TiledMapParser
 		[XmlAttribute("id")]
 		public int ID;
 		[XmlAttribute("gid")]
-		public int GID=-1;
+		public uint GID=0xffffffff;
+		// Tiled's GID (with two flip bits) is processed into these three fields, after calling Initialize:
+		public int ImageID=-1;
+		public bool MirrorX = false;
+		public bool MirrorY = false;
+		[XmlAttribute("rotation")]
+		public float Rotation = 0;
 		[XmlAttribute("name")]
 		public string Name;
 		[XmlAttribute("type")]
@@ -402,6 +408,14 @@ namespace TiledMapParser
 		public float Y;
 		[XmlElement("text")]
 		public Text textField;
+
+		public void Initialize() {
+			if (GID != 0xffffffff) {
+				ImageID = (int)(GID & 0x3fffffff);
+				MirrorX = (GID & 0x80000000) > 0;
+				MirrorY = (GID & 0x40000000) > 0;
+			}
+		}
 
 		override public string ToString() {
 			return "Object: " + Name + " ID: " + ID + " Type: " + Type + " coordinates: (" + X + "," + Y + ") dimensions: (" + Width + "," + Height + ")\n";	
