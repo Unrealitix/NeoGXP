@@ -223,6 +223,9 @@ namespace TiledMapParser
 		public float offsetX = 0;
 		[XmlAttribute("offsety")]
 		public float offsetY = 0;
+		[XmlAttribute("opacity")]		// alpha value
+		public float Opacity;
+
 
 		override public string ToString() {
 			return "Image layer: " + Name + " Image: " + Image + "\n";
@@ -271,6 +274,28 @@ namespace TiledMapParser
 		/// <returns>The tile array.</returns>
 		public short[,] GetTileArray() {
 			short[,] grid = new short[Width, Height];
+			FillTileArray(grid);
+			return grid;
+		}
+
+		/// <summary>
+		/// Returns the tile data from this layer as a 2-dimensional array of uints. 
+		/// It's a column-major array, so use [column,row] as indices.
+		/// 
+		/// Use the methods GetRotation, GetMirrorX and GetTileFrame from TiledUtils to 
+		/// convert the uints to rotated and mirrored animation sprites.
+		/// 
+		/// This method does a lot of string parsing and memory allocation, so use it only once,
+		/// during level loading.
+		/// </summary>
+		/// <returns>The tile array.</returns>
+		public uint[,] GetTileArrayRaw() {
+			uint[,] grid = new uint[Width, Height];
+			FillTileArray(null,grid);
+			return grid;
+		}
+
+		void FillTileArray(short[,] sgrid=null, uint[,] uigrid=null) { 
 			string[] lines = Data.innerXML.Split ('\n');
 			int row = 0;
 
@@ -284,14 +309,17 @@ namespace TiledMapParser
 				string[] chars = parseLine.Split (',');
 				for (int col = 0; col < chars.Length; col++) {
 					if (col < Width) {
-						short tileNum = short.Parse (chars [col]);
-						grid [col, row] = tileNum;
+						uint tileNum = uint.Parse(chars[col]);
+						if (uigrid!=null) {
+							uigrid[col, row]=tileNum;
+						}
+						if (sgrid!=null) {
+							sgrid[col, row] = (short)TiledUtils.GetTileFrame(tileNum);
+						}
 					}
 				}
 				row++;
 			}
-
-			return grid;
 		}
 	}
 
@@ -442,6 +470,30 @@ namespace TiledMapParser
 			} else {
 				throw new Exception ("Cannot recognize color string: " + htmlColor);
 			}
+		}
+
+		public static bool GetMirrorX(uint tileID) {
+			bool flipHor  = (tileID & 0x80000000) > 0;
+			bool flipVert = (tileID & 0x40000000) > 0;
+			bool flipDiag = (tileID & 0x20000000) > 0;
+			return flipHor ^ flipVert ^ flipDiag; // flipped if odd number of flips
+		}
+
+		public static float GetRotation(uint tileID) {
+			bool flipHor = (tileID & 0x80000000) > 0;
+			bool flipVert = (tileID & 0x40000000) > 0;
+			bool flipDiag = (tileID & 0x20000000) > 0;
+			bool flipped = flipHor ^ flipVert ^ flipDiag; // flipped if odd number of flips
+			float rotation = ((tileID>>29) & 3) * 90;
+			if (flipped) {
+				return (360-rotation)%360;
+			} else {
+				return rotation;
+			}
+		}
+
+		public static int GetTileFrame(uint tileID) {
+			return (int)(tileID & 0x1fffffff);
 		}
 	}
 }
