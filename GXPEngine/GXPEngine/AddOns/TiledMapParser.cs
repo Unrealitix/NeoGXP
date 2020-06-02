@@ -224,7 +224,7 @@ namespace TiledMapParser
 		[XmlAttribute("offsety")]
 		public float offsetY = 0;
 		[XmlAttribute("opacity")]		// alpha value
-		public float Opacity;
+		public float Opacity=1;
 
 
 		override public string ToString() {
