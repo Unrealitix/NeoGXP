@@ -10,10 +10,16 @@ namespace GXPEngine
 	{
 		protected float _frameWidth;
 		protected float _frameHeight;
-		
+
+		protected int _rows;
 		protected int _cols;
 		protected int _frames;
 		protected int _currentFrame;
+
+		protected int _startFrame = 0;
+		protected byte _animationDelay = 10;
+
+		private byte _animationFrameCounter = 0;
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														AnimSprite()
@@ -85,6 +91,7 @@ namespace GXPEngine
 			if (frames > rows * cols) frames = rows * cols;
 			if (frames < 1) return;
 			_cols = cols;
+			_rows = rows;
 			_frames = frames;
 			
 			_frameWidth = 1.0f / (float)cols;
@@ -140,7 +147,7 @@ namespace GXPEngine
 		public void SetFrame(int frame) {
 			if (frame == _currentFrame) return;
 			if (frame < 0) frame = 0;
-			if (frame >= _frames) frame = _frames - 1;
+			if (frame >= _frames + _startFrame) frame = _startFrame + _frames - 1;
 			_currentFrame = frame;
 			setUVs();
 		}
@@ -189,12 +196,67 @@ namespace GXPEngine
 		//														NextFrame()
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
-		/// Goes to the next frame. At the end of the animation, it jumps back to the first frame. (It loops)
+		/// Goes to the next frame. At the end of the animation, it jumps back to the start frame. (It loops)
 		/// </summary>
 		public void NextFrame() {
 			int frame = _currentFrame + 1;
-			if (frame >= _frames) frame = 0;
+			if (frame >= _frames + _startFrame) {
+				frame = _startFrame;
+			}
 			SetFrame(frame);
+		}
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														SetCycle()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Sets the animation cycle: the NextFrame method will go from startFrame to startFrame + numFrames - 1,
+		/// and then jump back to the startFrame.
+		/// If animationDelay is smaller than 255, then the Animate method will stay on 
+		/// the same animation frame for this many game frames (so larger value = slower animation).
+		/// If switchFrame is true then the currentFrame will be set in the given range, if it isn't already.
+		/// </summary>
+		/// <param name="startFrame">The first frame of the animation cycle</param>
+		/// <param name="numFrames">The number of frames in the animation cycle</param>
+		/// <param name="animationDelay">The number of game frames that the same animation frame should be shown, when calling Animate()</param>
+		/// <param name="switchFrame">If true, then the currentFrame will be set in the given range, if it isn't already.</param>
+		public void SetCycle(int startFrame, int numFrames=1, byte animationDelay=255, bool switchFrame=true) {
+			_startFrame=startFrame;
+			if (_startFrame<0)
+				_startFrame=0;
+			if (_startFrame>=_rows*_cols) {
+				_startFrame=_rows*_cols-1;
+			}
+			if (_frames>0) {
+				_frames=numFrames;
+			}
+			if (_frames+_startFrame>=_rows * _cols) {
+				_frames = _rows * _cols - _startFrame;
+			}
+			if (animationDelay<255) {
+				_animationDelay=animationDelay;
+			}
+			if (switchFrame && (_currentFrame<_startFrame || _currentFrame>=_startFrame+_frames)) {
+				SetFrame(_startFrame);
+				_animationFrameCounter=0;
+			}
+		}
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														Animate()
+		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// If the current animation frame has been shown for [_animationDelay] game frames, this
+		/// jumps to the next animation frame in the cycle.
+		/// Call this method every update, and use it in combination with SetCycle to 
+		/// create a timed sprite animation.
+		/// </summary>
+		public void Animate() {
+			_animationFrameCounter++;
+			if (_animationFrameCounter>=_animationDelay) {
+				NextFrame();
+				_animationFrameCounter=0;
+			}
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
