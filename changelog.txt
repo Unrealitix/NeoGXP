@@ -129,4 +129,4 @@ FEATURES:
 * TiledMapParser: adding some functionality, such as reading rotations from Object groups or Tile layers. You can now get the raw data (including mirror and rotation bitflags) or processed data (just tile numbers) from tile layers.
 * FindObject(s)OfType for easy (but slightly inefficient) finding of game objects. Don't abuse this! (E.g. don't call from Update!)
 * AnimationSprite has useful SetCycle and Animate methods, for easy animation.
-* FontLoader class, for loading fonts from (ttf) files.
+* Utils has a FontLoader method, for loading fonts from (ttf) files.
