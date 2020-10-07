@@ -23,7 +23,9 @@ namespace TiledMapParser {
 		/// </summary>
 		public bool addColliders;
 		/// <summary>
-		/// Whether the Tiled object type will be used to automatically create instances of a custom class with the same name.
+		/// Set this to true if this TiledLoader should automatically create instances of a custom classes,
+		/// when LoadObjectLayers is called.
+		/// In this case, the [Type] value of the Tiled object is used as class name (case sensitive!).
 		/// For image objects this requires that your class inherits from AnimationSprite, and 
 		///  has a constructor with parameters (string imageFile, int columns, int rows, TiledObject object).
 		/// For shape objects this requires that your class inherits from Sprite, and 
@@ -106,13 +108,14 @@ namespace TiledMapParser {
 		/// Call LoadTileLayers, LoadImageLayers and LoadObjectLayers to create GXPEngine sprites from the
 		/// layers in the given Tiled file.
 		/// </summary>
-		/// <param name="filename">the name of the Tiled file.</param>
+		/// <param name="filename">the name of the Tiled file (including .tmx extension).</param>
 		/// <param name="rootObject">start value for rootObject.</param>
 		/// <param name="addColliders">start value for addColliders.</param>
 		/// <param name="defaultOriginX">start value for defaultOriginX.</param>
 		/// <param name="defaultOriginY">start value for defaultOriginY.</param>
 		/// <param name="highQualityText">start value for highQualityText.</param>
 		/// <param name="autoInstance">start value for autoInstance.</param>
+		/// <param name="callback">A method to be called by the OnObjectCreated event.</param>
 		public TiledLoader(string filename,  
 			GameObject rootObject = null, bool addColliders = true,
 			float defaultOriginX = 0.5f, float defaultOriginY = 0.5f, 
