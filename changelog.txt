@@ -130,3 +130,4 @@ FEATURES:
 * FindObject(s)OfType for easy (but slightly inefficient) finding of game objects. Don't abuse this! (E.g. don't call from Update!)
 * AnimationSprite has useful SetCycle and Animate methods, for easy animation.
 * Utils has a FontLoader method, for loading fonts from (ttf) files.
+* Gizmos: Allows for easily drawing line-based debug shapes on top of the scene.
