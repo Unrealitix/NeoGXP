@@ -121,13 +121,12 @@ namespace GXPEngine.Core {
 				// Load the basic projection settings:
 				GL.MatrixMode(GL.PROJECTION);
 				GL.LoadIdentity();
+
+
+				_realToLogicWidthRatio = (double)newWidth / WindowSize.instance.width;
+				_realToLogicHeightRatio = (double)newHeight / WindowSize.instance.height;
 				// Here's where the conversion from logical width/height to real width/height happens: 
 				GL.Ortho(0.0f, newWidth / _realToLogicWidthRatio, newHeight / _realToLogicHeightRatio, 0.0f, 0.0f, 1000.0f);
-
-				lock (WindowSize.instance) {
-					WindowSize.instance.width = (int)(newWidth/_realToLogicWidthRatio);
-					WindowSize.instance.height = (int)(newHeight/_realToLogicHeightRatio);
-				}
 
 				if (Game.main!=null) {
 					Game.main.RenderRange=new Rectangle(0,0,WindowSize.instance.width,WindowSize.instance.height);
