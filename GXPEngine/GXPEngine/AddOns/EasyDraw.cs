@@ -151,13 +151,17 @@ namespace GXPEngine
 			graphics.Clear(Color.FromArgb(255, grayScale, grayScale, grayScale));
 		}
 
-		public void Clear(int red, int green, int blue) 
+		public void Clear(int red, int green, int blue, int alpha=255) 
 		{
-			graphics.Clear(Color.FromArgb (255, red, green, blue));
+			graphics.Clear(Color.FromArgb (alpha, red, green, blue));
+		}
+
+		public void ClearTransparent() {
+			graphics.Clear(Color.Transparent); // same as Clear(0,0,0,0);
 		}
 
 		//////////// Draw & measure Text
-		 
+
 		public void Text(string text, float x, float y) 
 		{
 			float twidth,theight;
