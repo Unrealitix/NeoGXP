@@ -15,7 +15,7 @@ namespace TiledMapParser
 	/// all can have a PropertyList, etc.)
 	/// 
 	/// You should extend this class yourself if you want to read more information from the Tiled file 
-	/// (such as tile rotations, geometry objects, ...). See
+	/// (such as geometry objects). See
 	///   http://docs.mapeditor.org/en/stable/reference/tmx-map-format/
 	/// for details.
 	/// </summary>
@@ -38,7 +38,7 @@ namespace TiledMapParser
 	}
 
 	[XmlRootAttribute("map")]
-	public class Map {
+	public class Map : PropertyContainer {
 		[XmlAttribute("width")]
 		public int Width;
 		[XmlAttribute("height")]
@@ -151,6 +151,10 @@ namespace TiledMapParser
 		[XmlElement("properties")]
 		public PropertyList propertyList;
 
+		/// <summary>
+		/// Returns true if this object has a property with name [key] of type [type].
+		/// As [type], you can pass in "int", "float", "bool", "string" and "color".
+		/// </summary>
 		public bool HasProperty(string key, string type) {
 			if (propertyList==null)
 				return false;
@@ -161,6 +165,10 @@ namespace TiledMapParser
 			return false;
 		}
 
+		/// <summary>
+		/// Returns the value of this object's string property with name [key], if it has such a property.
+		/// Otherwise, it returns the default value that you can pass as second parameter.
+		/// </summary>
 		public string GetStringProperty(string key, string defaultValue="") {
 			if (propertyList==null)
 				return defaultValue;
@@ -171,6 +179,10 @@ namespace TiledMapParser
 			return defaultValue;
 		}
 
+		/// <summary>
+		/// Returns the value of this object's float property with name [key], if it has such a property.
+		/// Otherwise, it returns the default value that you can pass as second parameter.
+		/// </summary>
 		public float GetFloatProperty(string key, float defaultValue=1) {
 			if (propertyList==null)
 				return defaultValue;
@@ -181,6 +193,10 @@ namespace TiledMapParser
 			return defaultValue;
 		}
 
+		/// <summary>
+		/// Returns the value of this object's int property with name [key], if it has such a property.
+		/// Otherwise, it returns the default value that you can pass as second parameter.
+		/// </summary>
 		public int GetIntProperty(string key, int defaultValue=1) {
 			if (propertyList==null)
 				return defaultValue;
@@ -191,6 +207,10 @@ namespace TiledMapParser
 			return defaultValue;
 		}
 
+		/// <summary>
+		/// Returns the value of this object's bool property with name [key], if it has such a property.
+		/// Otherwise, it returns the default value that you can pass as second parameter.
+		/// </summary>
 		public bool GetBoolProperty(string key, bool defaultValue=false) {
 			if (propertyList==null)
 				return defaultValue;
@@ -201,6 +221,11 @@ namespace TiledMapParser
 			return defaultValue;
 		}
 
+		/// <summary>
+		/// Returns the value of this object's color property with name [key], if it has such a property.
+		/// Otherwise, it returns the default value that you can pass as second parameter.
+		/// The returned color can be set directly as color value of a GXPEngine Sprite.
+		/// </summary>
 		public uint GetColorProperty(string key, uint defaultvalue=0xffffffff) {
 			if (propertyList==null)
 				return defaultvalue;
@@ -223,6 +248,9 @@ namespace TiledMapParser
 		public float offsetX = 0;
 		[XmlAttribute("offsety")]
 		public float offsetY = 0;
+		[XmlAttribute("opacity")]		// alpha value
+		public float Opacity=1;
+
 
 		override public string ToString() {
 			return "Image layer: " + Name + " Image: " + Image + "\n";
@@ -271,6 +299,28 @@ namespace TiledMapParser
 		/// <returns>The tile array.</returns>
 		public short[,] GetTileArray() {
 			short[,] grid = new short[Width, Height];
+			FillTileArray(grid);
+			return grid;
+		}
+
+		/// <summary>
+		/// Returns the tile data from this layer as a 2-dimensional array of uints. 
+		/// It's a column-major array, so use [column,row] as indices.
+		/// 
+		/// Use the methods GetRotation, GetMirrorX and GetTileFrame from TiledUtils to 
+		/// convert the uints to rotated and mirrored animation sprites.
+		/// 
+		/// This method does a lot of string parsing and memory allocation, so use it only once,
+		/// during level loading.
+		/// </summary>
+		/// <returns>The tile array.</returns>
+		public uint[,] GetTileArrayRaw() {
+			uint[,] grid = new uint[Width, Height];
+			FillTileArray(null,grid);
+			return grid;
+		}
+
+		void FillTileArray(short[,] sgrid=null, uint[,] uigrid=null) { 
 			string[] lines = Data.innerXML.Split ('\n');
 			int row = 0;
 
@@ -284,14 +334,17 @@ namespace TiledMapParser
 				string[] chars = parseLine.Split (',');
 				for (int col = 0; col < chars.Length; col++) {
 					if (col < Width) {
-						short tileNum = short.Parse (chars [col]);
-						grid [col, row] = tileNum;
+						uint tileNum = uint.Parse(chars[col]);
+						if (uigrid!=null) {
+							uigrid[col, row]=tileNum;
+						}
+						if (sgrid!=null) {
+							sgrid[col, row] = (short)TiledUtils.GetTileFrame(tileNum);
+						}
 					}
 				}
 				row++;
 			}
-
-			return grid;
 		}
 	}
 
@@ -387,7 +440,13 @@ namespace TiledMapParser
 		[XmlAttribute("id")]
 		public int ID;
 		[XmlAttribute("gid")]
-		public int GID=-1;
+		public uint GID=0xffffffff;
+		// Tiled's GID (with two flip bits) is processed into these three fields, after calling Initialize:
+		public int ImageID=-1;
+		public bool MirrorX = false;
+		public bool MirrorY = false;
+		[XmlAttribute("rotation")]
+		public float Rotation = 0;
 		[XmlAttribute("name")]
 		public string Name;
 		[XmlAttribute("type")]
@@ -402,6 +461,18 @@ namespace TiledMapParser
 		public float Y;
 		[XmlElement("text")]
 		public Text textField;
+		
+		/// <summary>
+		/// Call this method to initialize the MirrorX, MirrorY and ImageID fields.
+		/// (The GID value read from the file encodes all of this information.)
+		/// </summary>
+		public void Initialize() {
+			if (GID != 0xffffffff) {
+				ImageID = (int)(GID & 0x3fffffff);
+				MirrorX = (GID & 0x80000000) > 0;
+				MirrorY = (GID & 0x40000000) > 0;
+			}
+		}
 
 		override public string ToString() {
 			return "Object: " + Name + " ID: " + ID + " Type: " + Type + " coordinates: (" + X + "," + Y + ") dimensions: (" + Width + "," + Height + ")\n";	
@@ -428,6 +499,40 @@ namespace TiledMapParser
 			} else {
 				throw new Exception ("Cannot recognize color string: " + htmlColor);
 			}
+		}
+
+		/// <summary>
+		/// This method converts a raw tile number read from a tile layer to a mirrorX value.
+		/// </summary>
+		public static bool GetMirrorX(uint tileID) {
+			bool flipHor  = (tileID & 0x80000000) > 0;
+			bool flipVert = (tileID & 0x40000000) > 0;
+			bool flipDiag = (tileID & 0x20000000) > 0;
+			return flipHor ^ flipVert ^ flipDiag; // flipped if odd number of flips
+		}
+
+		/// <summary>
+		/// This method converts a raw tile number read from a tile layer to a rotation value in degrees.
+		/// </summary>
+		public static float GetRotation(uint tileID) {
+			bool flipHor = (tileID & 0x80000000) > 0;
+			bool flipVert = (tileID & 0x40000000) > 0;
+			bool flipDiag = (tileID & 0x20000000) > 0;
+			bool flipped = flipHor ^ flipVert ^ flipDiag; // flipped if odd number of flips
+			float rotation = ((tileID>>29) & 3) * 90;
+			if (flipped) {
+				return (360-rotation)%360;
+			} else {
+				return rotation;
+			}
+		}
+
+		/// <summary>
+		/// This method converts a raw tile number read from a tile layer to a pure image ID, 
+		/// that can be used with Map.GetTileSet.
+		/// </summary>
+		public static int GetTileFrame(uint tileID) {
+			return (int)(tileID & 0x1fffffff);
 		}
 	}
 }

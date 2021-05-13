@@ -593,6 +593,92 @@ namespace GXPEngine
 			}
 		}
 
+		/// <summary>
+		/// Returns the first object of the given type, found within the descendants of this game object
+		/// (including this game object itself).
+		/// If there's no descendant of the given type, returns null.
+		/// For example, if you have made a Player class, call this method like this: 
+		///  game.FindObjectOfType(typeof(Player));
+		/// </summary>
+		/// <param name="type">The object type you're looking for (must inherit from GameObject)</param>
+		/// <returns>A descendant of the given type, if it exists.</returns>
+		public GameObject FindObjectOfType(Type type) {
+			if (GetType() == type) {
+				return this;
+			}
+			foreach (GameObject child in _children) {
+				GameObject result = child.FindObjectOfType(type);
+				if (result!=null) {
+					return result;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns the first object of the given type, found within the descendants of this game object
+		/// (including this game object itself).
+		/// If there's no descendant of the given type, returns null.
+		/// The given type must inherit from GameObject.
+		/// </summary>
+		/// <returns>A descendant of the given type, if it exists.</returns>
+		public T FindObjectOfType<T>() where T:GameObject {
+			if (this is T) {
+				return (T)this;
+			}
+			foreach (GameObject child in _children) {
+				T result = child.FindObjectOfType<T>();
+				if (result!=null) {
+					return result;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns the all objects of the given type, found within the descendants of this game object
+		/// (including this game object itself).
+		/// For example, if you have made a Player class, call this like this: 
+		///  game.FindObjectsOfType(typeof(Player));
+		/// </summary>
+		/// <param name="type">The object type you're looking for (must inherit from GameObject)</param>
+		/// <returns>All descendants of the given type.</returns>
+		public GameObject[] FindObjectsOfType(Type type) {
+			List<GameObject> results = new List<GameObject>();
+			FindObjectsOfType(type, results);
+			return results.ToArray();
+		}
+
+		private void FindObjectsOfType(Type type, List<GameObject> results) {
+			if (GetType() == type) {
+				results.Add(this);
+			}
+			foreach (GameObject child in _children) {
+				child.FindObjectsOfType(type, results);
+			}
+		}
+
+		/// <summary>
+		/// Returns the all objects of the given type, found within the descendants of this game object
+		/// (including this game object itself).
+		/// The type must inherit from GameObject.
+		/// </summary>
+		/// <returns>All descendants of the given type.</returns>
+		public T[] FindObjectsOfType<T>() where T:GameObject {
+			List<T> results = new List<T>();
+			FindObjectsOfType<T>(results);
+			return results.ToArray();
+		}
+
+		private void FindObjectsOfType<T>(List<T> results) where T:GameObject {
+			if (this is T) {
+				results.Add((T)this);
+			}
+			foreach (GameObject child in _children) {
+				child.FindObjectsOfType<T>(results);
+			}
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														ToString()
 		//------------------------------------------------------------------------------------------------------------------------

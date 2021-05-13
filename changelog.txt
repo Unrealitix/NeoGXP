@@ -1,4 +1,4 @@
-Last update: 10-7-2019
+Last update: 3-7-2020
 
 
 0.0.1 - initial post
@@ -120,3 +120,14 @@ FEATURES:
 hidden, and doesn't require subclassing.
 
 * (BHO03:) Supporting SoLoud as audio backend on Windows and Mac, both 32 and 64 bit.
+
+----- 2020/2021 version (PBO06):
+
+FEATURES:
+
+* TiledLoader: automatically creates GXPEngine sprites based on a Tiled file, with proper position, rotation, scale, fonts (enables using Tiled as a WYSIWYG (UI) editor, except when using newlines in Tiled text). If you want to customize the object loading, there's an event you can subscribe to, and a number of useful utility methods for creating and placing sprites and text.
+* TiledMapParser: adding some functionality, such as reading rotations from Object groups or Tile layers. You can now get the raw data (including mirror and rotation bitflags) or processed data (just tile numbers) from tile layers.
+* FindObject(s)OfType for easy (but slightly inefficient) finding of game objects. Don't abuse this! (E.g. don't call from Update!)
+* AnimationSprite has useful SetCycle and Animate methods, for easy animation.
+* Utils has a FontLoader method, for loading fonts from (ttf) files.
+* Gizmos: Allows for easily drawing line-based debug shapes on top of the scene.
