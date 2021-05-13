@@ -1,6 +1,9 @@
-﻿using System;
+﻿//#define USE_FMOD_AUDIO
+
+using System;
 using System.Threading;
 using System.Collections.Generic;
+using GXPEngine.Core;
 
 namespace GXPEngine
 {
@@ -10,52 +13,49 @@ namespace GXPEngine
 	/// </summary>
 	public class Sound
 	{
-		private static int _system = 0;
-		private static Dictionary<string,int> _soundCache = new Dictionary<string, int> ();
-		
-		private int _id;
-		
-		/// <summary>
-		/// Creates a new <see cref="GXPEngine.Sound"/>.
-		/// This class represents a sound file.
-		/// Sound files are loaded into memory unless you set them to 'streamed'.
-		/// An optional parameter allows you to create a looping sound.
-		/// </summary>
-		/// <param name='filename'>
-		/// Filename, should include path and extension.
-		/// </param>
-		/// <param name='looping'>
-		/// If set to <c>true</c> the sound file repeats itself. (It loops)
-		/// </param>
-		/// <param name='streaming'>
-		/// If set to <c>true</c>, the file will be streamed rather than loaded into memory.
-		/// </param>
-		/// <param name='cached'>
-		/// If set to <c>true</c>, the sound will be stored in cache, preserving memory when creating the same sound multiple times.
-		/// </param>
-		public Sound( String filename, bool looping = false, bool streaming = false)
+        private static Dictionary<string, IntPtr> _soundCache = new Dictionary<string, IntPtr>();
+
+        private IntPtr _id;
+        private SoundSystem _system;
+
+        /// <summary>
+        /// Creates a new <see cref="GXPEngine.Sound"/>.
+        /// This class represents a sound file.
+        /// Sound files are loaded into memory unless you set them to 'streamed'.
+        /// An optional parameter allows you to create a looping sound.
+        /// </summary>
+        /// <param name='filename'>
+        /// Filename, should include path and extension.
+        /// </param>
+        /// <param name='looping'>
+        /// If set to <c>true</c> the sound file repeats itself. (It loops)
+        /// </param>
+        /// <param name='streaming'>
+        /// If set to <c>true</c>, the file will be streamed rather than loaded into memory.
+        /// </param>
+        /// <param name='cached'>
+        /// If set to <c>true</c>, the sound will be stored in cache, preserving memory when creating the same sound multiple times.
+        /// </param>
+        public Sound( String filename, bool looping = false, bool streaming = false)
 		{
-			if ( _system == 0 ) { // if fmod not initialized, create system and init default
-				FMOD.System_Create( out _system );
-				FMOD.System_Init( _system, 32, 0, 0 );
-			}
-			uint loop = FMOD.FMOD_LOOP_OFF; // no loop
-			if ( looping ) loop = FMOD.FMOD_LOOP_NORMAL;
-			if ( streaming ) {
-				FMOD.System_CreateStream( _system, filename, loop, 0, out _id );	
-				if (_id == 0) {
-					throw new Exception ("Sound file not found: " + filename);
-				}
+            _system = GLContext.soundSystem;
+
+            if (streaming) {
+                _id = _system.CreateStream(filename, looping);
 			} else {
-				if (_soundCache.ContainsKey (filename)) {
-					_id = _soundCache [filename];
-				} else {
-					FMOD.System_CreateSound (_system, filename, loop, 0, out _id);
-					if (_id == 0) {
-						throw new Exception ("Sound file not found: " + filename);
-					}
-					_soundCache [filename] = _id;
-				}
+                if (!_soundCache.ContainsKey(filename))
+                {
+                    _id = _system.LoadSound(filename, looping);
+                    if (_id == IntPtr.Zero)
+                    {
+                        throw new Exception("Sound file not found: " + filename);
+                    }
+                    _soundCache[filename] = _id;
+                }
+                else
+                {
+                    _id = _soundCache[filename];
+                }
 			}
 		}
 		
@@ -63,12 +63,6 @@ namespace GXPEngine
 		{
 		}
 
-		internal static void Step() 
-		{
-			//if (_system != 0) 
-			FMOD.System_Update(_system);
-		}
-		
 		/// <summary>
 		/// Play the specified paused and return the newly created SoundChannel
 		/// </summary>
@@ -82,13 +76,22 @@ namespace GXPEngine
 		/// When set to -1 (the default), the next free channel will be used.
 		/// However, when all channels are in use, Sound.Play will silently fail.
 		/// </param>
-		public SoundChannel Play( bool paused = false, int channelId = -1 )
+		public SoundChannel Play( bool paused = false, uint channelId=0, float volume=1, float pan=0)
 		{
-			int id = 0;
-			FMOD.System_PlaySound( _system, channelId, _id, paused, ref id );
-			SoundChannel soundChannel = new SoundChannel( id );
+
+			#if !USE_FMOD_AUDIO
+			if (channelId != 0)
+			{
+				throw new Exception("Channel ID is not supported when using SoLoud audio. Please change #define in GLContext.cs!");
+			}
+			#else
+			if (channelId==0) {
+			channelId=4294967295; // -1 basically (since FMOD actually works with ints), which means: pick a free channel.
+			}
+			#endif
+			uint channelID = _system.PlaySound(_id, channelId, paused, volume, pan);
+			SoundChannel soundChannel = new SoundChannel( channelID );
 			return soundChannel;
 		}
-		
 	}
 }

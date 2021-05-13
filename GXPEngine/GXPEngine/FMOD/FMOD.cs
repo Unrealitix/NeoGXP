@@ -2,7 +2,7 @@ using System;
 using System.Security;
 using System.Runtime.InteropServices;
 
-namespace GXPEngine
+namespace GXPEngine.Core
 {
 	public class FMOD
 	{
@@ -43,70 +43,70 @@ namespace GXPEngine
 
 // System		
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_System_Create")]
-		public static extern void System_Create(out int system);
+		public static extern void System_Create(out IntPtr system);
 		
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_System_Init")]
-		public static extern void System_Init(int system, int maxChannels, uint flags, int extraDriverData);
+		public static extern void System_Init(IntPtr system, int maxChannels, uint flags, int extraDriverData);
 		
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_System_CreateSound")]
-		public static extern void System_CreateSound(int system, string filename, uint mode, int uk, out int sound);
+		public static extern void System_CreateSound(IntPtr system, string filename, uint mode, int uk, out IntPtr sound);
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_System_CreateStream")]
-		public static extern void System_CreateStream(int system, string filename, uint mode, int uk, out int sound);
+		public static extern void System_CreateStream(IntPtr system, string filename, uint mode, int uk, out IntPtr sound);
 		
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_System_PlaySound")]
-		public static extern int System_PlaySound(int system, int channelpref, int sound, bool paused, ref int channel);
+		public static extern int System_PlaySound(IntPtr system, uint channelpref, IntPtr sound, bool paused, out uint channel);
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_System_Update")]
-		public static extern void System_Update(int system);
+		public static extern void System_Update(IntPtr system);
 
 // Channel
 	// Frequency
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetFrequency")]
-		public static extern void Channel_GetFrequency( int channel, out float frequency );
+		public static extern void Channel_GetFrequency( uint channel, out float frequency );
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_SetFrequency")]
-		public static extern void Channel_SetFrequency( int channel, float frequency );
+		public static extern void Channel_SetFrequency( uint channel, float frequency );
 		
 	// Stop
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_Stop")]
-		public static extern void Channel_Stop( int channel );
+		public static extern void Channel_Stop( uint channel );
 
 	// Mute
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetMute")]
-		public static extern void Channel_GetMute( int channel, out bool mute );
+		public static extern void Channel_GetMute( uint channel, out bool mute );
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_SetMute")]
-		public static extern void Channel_SetMute( int channel, bool mute );
+		public static extern void Channel_SetMute( uint channel, bool mute );
 
 	// Pan
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetPan")]
-		public static extern void Channel_GetPan( int channel, out float pan );
+		public static extern void Channel_GetPan( uint channel, out float pan );
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_SetPan")]
-		public static extern void Channel_SetPan( int channel, float pan );
+		public static extern void Channel_SetPan( uint channel, float pan );
 
 	// Paused
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetPaused")]
-		public static extern void Channel_GetPaused( int channel, out bool paused );
+		public static extern void Channel_GetPaused( uint channel, out bool paused );
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_SetPaused")]
-		public static extern void Channel_SetPaused( int channel, bool paused );
+		public static extern void Channel_SetPaused( uint channel, bool paused );
 
 	// Playing
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_IsPlaying")]
-		public static extern void Channel_IsPlaying( int channel, out bool playing );
+		public static extern void Channel_IsPlaying( uint channel, out bool playing );
 
 	// Spectrum // can also be done in System for total output, not tested yet
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetSpectrum")]
-		public static extern void Channel_GetSpectrum( int channel, float [] spectrumarray, int numvalues, int channeloffset, int windowtype );
+		public static extern void Channel_GetSpectrum( uint channel, float [] spectrumarray, int numvalues, uint channeloffset, int windowtype );
 
 	// Volume
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_GetVolume")]
-		public static extern void Channel_GetVolume( int channel, out float volume );
+		public static extern void Channel_GetVolume( uint channel, out float volume );
 
 		[DllImport("lib/fmodex.dll", EntryPoint="FMOD_Channel_SetVolume")]
-		public static extern void Channel_SetVolume( int channel, float volume );
+		public static extern void Channel_SetVolume( uint channel, float volume );
 		
 	}
 }

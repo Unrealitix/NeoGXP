@@ -17,7 +17,6 @@ namespace GXPEngine
 
 		private UpdateManager _updateManager;
 		private CollisionManager _collisionManager;
-		private List<GameObject> _gameObjectsContained;
 
 		/// <summary>
 		/// Step delegate defines the signature of a method used for step callbacks, see OnBeforeStep, OnAfterStep.
@@ -50,6 +49,11 @@ namespace GXPEngine
 			}
 		}
 
+		/// <summary>
+		/// Set this to false if you *only* want to render using your own cameras.
+		/// (Don't say we didn't warn you if you end up with a black screen...)
+		/// </summary>
+		public bool RenderMain = true;
 		public readonly bool PixelArt;
 
 		private Rectangle _renderRange;
@@ -62,13 +66,28 @@ namespace GXPEngine
 		/// This class represents a game window, containing an openGL view.
 		/// </summary>
 		/// <param name='width'>
-		/// Width of the window in pixels.
+		/// Width of the window in pixels. (As used by all the logic, e.g. the coordinate system)
 		/// </param>
 		/// <param name='height'>
-		/// Height of the window in pixels.
+		/// Height of the window in pixels. (As used by all the logic, e.g. the coordinate system)
 		/// </param>
 		/// <param name='fullScreen'>
 		/// If set to <c>true</c> the application will run in fullscreen mode.
+		/// </param>
+		/// <param name='vSync'>
+		/// If <c>true</c>, the frame rate will sync to the screen refresh rate, so setting targetFps has no effect. 
+		/// (It's best to give this the same value as the 'fullScreen' parameter.)
+		/// </param>
+		/// <param name='realWidth'>
+		/// The actual window width. By default (if passing a negative value), this is equal to the 'width' parameter, but using
+		/// this parameter you can easily change the window width without having to change any other code.
+		/// </param>
+		/// <param name='realHeight'>
+		/// The actual window height. By default (if passing a negative value), this is equal to the 'height' parameter, but using
+		/// this parameter you can easily change the window height without having to change any other code.
+		/// </param>
+		/// <param name='pixelArt'>
+		/// If <c>true</c>, textures will not be interpolated ('blurred'). This way, you can get a typical pixel art look.
 		/// </param>
 		public Game (int pWidth, int pHeight, bool pFullScreen, bool pVSync = true, int pRealWidth=-1, int pRealHeight=-1, bool pPixelArt=false) : base()
 		{
@@ -95,7 +114,6 @@ namespace GXPEngine
 				_collisionManager = new CollisionManager ();
 				_glContext = new GLContext (this);
 				_glContext.CreateWindow (pWidth, pHeight, pFullScreen, pVSync, pRealWidth, pRealHeight);
-				_gameObjectsContained = new List<GameObject>();
 
 				_renderRange = new Rectangle (0, 0, pWidth, pHeight);
 
@@ -160,8 +178,6 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		internal void Step ()
 		{
-			Sound.Step ();
-
 			if (OnBeforeStep != null)
 				OnBeforeStep ();
 			_updateManager.Step ();
@@ -173,7 +189,9 @@ namespace GXPEngine
 		bool recurse=true;
 
 		public override void Render(GLContext glContext) {
-			base.Render (glContext);
+			if (RenderMain || !recurse) {
+				base.Render (glContext);
+			}
 			if (OnAfterRender != null && recurse) {
 				recurse = false;
 				OnAfterRender (glContext);
@@ -191,32 +209,25 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Add()
 		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Should only be called from the GameObject class!
+		/// </summary>
 		internal void Add (GameObject gameObject)
 		{
-			if (!_gameObjectsContained.Contains (gameObject)) {
-				_updateManager.Add (gameObject);
-				_collisionManager.Add (gameObject);
-				_gameObjectsContained.Add (gameObject);
-			}
+			_updateManager.Add (gameObject);
+			_collisionManager.Add (gameObject);
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Remove()
 		//------------------------------------------------------------------------------------------------------------------------
+		/// <summary>
+		/// Should only be called from the GameObject class!
+		/// </summary>
 		internal void Remove (GameObject gameObject)
 		{
-			if (_gameObjectsContained.Contains (gameObject)) {
-				_updateManager.Remove (gameObject);
-				_collisionManager.Remove (gameObject);
-				_gameObjectsContained.Remove (gameObject);
-			}
-		}
-
-		//------------------------------------------------------------------------------------------------------------------------
-		//														Contains()
-		//------------------------------------------------------------------------------------------------------------------------
-		public Boolean Contains(GameObject gameObject) {
-			return _gameObjectsContained.Contains(gameObject);
+			_updateManager.Remove (gameObject);
+			_collisionManager.Remove (gameObject);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -283,9 +294,12 @@ namespace GXPEngine
 			return counter;
 		}
 
+		/// <summary>
+		/// Returns a string with some internal engine information. Use this for debugging, especially when the game slows down.
+		/// </summary>
+		/// <returns>Internal engine information.</returns>
 		public string GetDiagnostics() {
 			string output = "";
-			output += "Number of game objects contained: "+_gameObjectsContained.Count+'\n';
 			output += "Number of objects in hierarchy: " + CountSubtreeSize (this)+'\n';
 			output += "OnBeforeStep delegates: "+(OnBeforeStep==null?0:OnBeforeStep.GetInvocationList().Length)+'\n';
 			output += "OnAfterStep delegates: "+(OnAfterStep==null?0:OnAfterStep.GetInvocationList().Length)+'\n';

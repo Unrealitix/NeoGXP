@@ -1,3 +1,6 @@
+Last update: 10-7-2019
+
+
 0.0.1 - initial post
 0.0.2 - fixed Canvas to allow for faster writing
 0.0.3 - fixed collider bug (collider bugged when destroyed)
@@ -71,3 +74,49 @@ MouseHandler:
 	- setScale added to set both scaleX and scaleY at once
 	- getMouseUp (thanks LeonB)
 	- Sprite.cs width/height getter/setter fixed .. they were using ints 
+	
+	
+----- 2018/2019 version (PBO06):	
+
+* Splitscreen functionality (See Camera and Window) 
+* Cache sounds - no memory leaks 
+* Viewport resolution independent from "game logic" resolution (game.width and game.height) 
+* Adding diagnostic tools to Game (report number of colliders, objects in hierarchy, etc) 
+* Option to keep textures in cache (to prevent too much file loading and stuttering) 
+* Trying to read non-existing sound file gives exception 
+* Prevented Canvas Destroy Exception 
+* Adding EasyDraw class, very much inspired by the Processing API 
+* Enabling pixel art - see the Game constructor 
+* Adding TiledMapParser - note that this now requires fiddling with .exe.config files on Mac/Linux... 
+* Adding Settings.cs (loading parameters at runtime)
+* Adding HierarchyManager (allowing delayed Destroy, after the update loop)
+
+----- 2019/2020 version (PBO06):
+
+BUG FIXES / BUG PREVENTION:
+* Creating sprites before calling the Game constructor gives a useful Exception
+* resizing the window will update the Game's Renderwindow again
+* Tiled's ImageLayer offsets are floats instead of ints
+* Fixing both hittests in BoxCollider for the case of skewed sprites 
+  (which can happen when combining non-uniform scaling for a parent with child rotations), using true SAT.
+* Fixing common causes of memory leaks and inexplicable bugs:
+    -Game has no explicit list of game objects contained.
+    -Game objects are only updated / collision checked when they are in the hierarchy.
+    -Destroyed game objects cannot be added to the hierarchy again.
+* Fixing the CollisionManager: Destroy / AddChild etc cannot be called while the OnCollision loop is active. 
+   Use LateDestroy / LateAddChild etc. instead. 
+   (For old projects that now give exceptions: you can turn off this functionality using CollisionManager.SafeCollisionLoop=false)
+
+* GameObject.GetChildren is now safe by default (clone list)
+* Sound.Play has volume & pan parameter: now SoLoud can also play with different volume and pan.   
+   
+FEATURES:
+* TiledParser: adding a method that converts the string data (innerXML) to a 2-dimensional array of integers.
+* Added "MoveUntilCollision" method for GameObjects (plus helper methods).
+* (Box)Colliders now have a GetCollisionInfo method: returns collision details for overlapping colliders, such as normal, point of impact and penetration depth.
+* HierarchyManager and GameObject have LateDestroy, LateAdd(At) and LateRemove methods.
+* Adding the option to *only* render using camera's. (game.RenderMain=false)
+* All Sprite (sub)classes now have an optional argument for adding a collider or not (default = true). Now the option to not add a collider is not quite as
+hidden, and doesn't require subclassing.
+
+* (BHO03:) Supporting SoLoud as audio backend on Windows and Mac, both 32 and 64 bit.

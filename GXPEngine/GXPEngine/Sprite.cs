@@ -27,8 +27,14 @@ namespace GXPEngine
 		/// <param name='bitmap'>
 		/// Bitmap.
 		/// </param>
-		public Sprite (System.Drawing.Bitmap bitmap)
+		/// <param name="addCollider">
+		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
+		/// </param> 
+		public Sprite (System.Drawing.Bitmap bitmap, bool addCollider=true) : base(addCollider)
 		{
+			if (Game.main == null) {
+				throw new Exception ("Sprites cannot be created before creating a Game instance.");
+			}
 			name = "BMP" + bitmap.Width + "x" + bitmap.Height;
 			initializeFromTexture(new Texture2D(bitmap));
 		}
@@ -52,8 +58,18 @@ namespace GXPEngine
 		/// <param name='filename'>
 		/// The name of the file that should be loaded.
 		/// </param>
-		public Sprite (string filename, bool keepInCache=false)
+		/// <param name="keepInCache">
+		/// If <c>true</c>, the sprite's texture will be kept in memory for the entire lifetime of the game. 
+		/// This takes up more memory, but removes load times.
+		/// </param> 
+		/// <param name="addCollider">
+		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
+		/// </param> 
+		public Sprite (string filename, bool keepInCache=false, bool addCollider=true) : base(addCollider)
 		{
+			if (Game.main == null) {
+				throw new Exception ("Sprites cannot be created before creating a Game instance.");
+			}
 			name = filename;
 			initializeFromTexture(Texture2D.GetInstance(filename, keepInCache));
 		}

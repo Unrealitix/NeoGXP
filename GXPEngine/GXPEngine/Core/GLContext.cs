@@ -1,3 +1,5 @@
+//#define USE_FMOD_AUDIO
+
 using System;
 using GXPEngine.OpenGL;
 
@@ -24,6 +26,7 @@ namespace GXPEngine.Core {
 		public static int mouseY = 0;
 		
 		private Game _owner;
+        private static SoundSystem _soundSystem;
 		
 		private int _targetFrameRate = 60;
 		private long _lastFrameTime = 0;
@@ -56,6 +59,20 @@ namespace GXPEngine.Core {
 		public int height {
 			get { return WindowSize.instance.height; }
 		}
+
+        //------------------------------------------------------------------------------------------------------------------------
+        //														SoundSystem
+        //------------------------------------------------------------------------------------------------------------------------
+        public static SoundSystem soundSystem
+        {
+            get
+            {
+				if (_soundSystem == null) {
+					InitializeSoundSystem ();
+				}
+                return _soundSystem;
+            }
+        }
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														setupWindow()
@@ -111,7 +128,21 @@ namespace GXPEngine.Core {
 					WindowSize.instance.width = (int)(newWidth/_realToLogicWidthRatio);
 					WindowSize.instance.height = (int)(newHeight/_realToLogicHeightRatio);
 				}
+
+				if (Game.main!=null) {
+					Game.main.RenderRange=new Rectangle(0,0,WindowSize.instance.width,WindowSize.instance.height);
+				}
 			});
+			InitializeSoundSystem ();
+		}
+
+		private static void InitializeSoundSystem() {
+#if USE_FMOD_AUDIO
+			_soundSystem = new FMODSoundSystem();
+#else
+			_soundSystem = new SoloudSoundSystem();
+#endif
+			_soundSystem.Init();
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
@@ -149,7 +180,8 @@ namespace GXPEngine.Core {
 		//														Close()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Close() {
-			GL.glfwCloseWindow();
+            _soundSystem.Deinit();
+            GL.glfwCloseWindow();
 			GL.glfwTerminate();
 			System.Environment.Exit(0);
 		}
@@ -158,8 +190,7 @@ namespace GXPEngine.Core {
 		//														Run()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Run() {
-			//Update();
-			GL.glfwSetTime(0.0);
+            GL.glfwSetTime(0.0);
 			do {
 				if (_vsyncEnabled || (Time.time - _lastFrameTime > (1000 / _targetFrameRate))) {
 					_lastFrameTime = Time.time;
@@ -174,6 +205,7 @@ namespace GXPEngine.Core {
 					
 					UpdateMouseInput();
 					_owner.Step();
+                    _soundSystem.Step();
 					
 					ResetHitCounters();
 					Display();

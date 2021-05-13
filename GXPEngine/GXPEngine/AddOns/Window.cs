@@ -87,7 +87,6 @@ namespace GXPEngine {
 		/// To render the scene in this window, subscribe this method to the main game's OnAfterRender event.
 		/// </summary>
 		public void RenderWindow(GLContext glContext) {
-
 			if (_dirty) {
 				window.x = _windowX + _width / 2;
 				window.y = _windowY + _height / 2;
@@ -139,6 +138,7 @@ namespace GXPEngine {
 				if (worldSpaceCorners[i].y > maxY) maxY = worldSpaceCorners[i].y;
 				if (worldSpaceCorners[i].y < minY) minY = worldSpaceCorners[i].y;
 			}
+
 			Game.main.RenderRange = new GXPEngine.Core.Rectangle (minX, minY, maxX - minX, maxY - minY);
 		}
 	}

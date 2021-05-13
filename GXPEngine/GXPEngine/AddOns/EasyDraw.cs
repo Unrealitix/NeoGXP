@@ -24,17 +24,17 @@ namespace GXPEngine
 		protected bool _stroke=true;
 		protected bool _fill=true;
 
-		public EasyDraw (int width, int height) : base (new Bitmap (width, height))
+		public EasyDraw (int width, int height, bool addCollider=true) : base (new Bitmap (width, height),addCollider)
 		{
 			Initialize ();
 		}
 
-		public EasyDraw (System.Drawing.Bitmap bitmap) : base (bitmap)
+		public EasyDraw (System.Drawing.Bitmap bitmap, bool addCollider=true) : base (bitmap,addCollider)
 		{
 			Initialize ();
 		}
 
-		public EasyDraw (string filename) : base(filename)
+		public EasyDraw (string filename, bool addCollider=true) : base(filename,addCollider)
 		{
 			Initialize ();
 		}
