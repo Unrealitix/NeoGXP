@@ -33,6 +33,22 @@ namespace GXPEngine {
 			}
 		}
 		/// <summary>
+		/// The x coordinate of the window center
+		/// </summary>
+		public float centerX {
+			get {
+				return _windowX + _width / 2f;
+			}
+		}
+		/// <summary>
+		/// The y coordinate of the window center
+		/// </summary>
+		public float centerY {
+			get {
+				return _windowY + _height / 2f;
+			}
+		}
+		/// <summary>
 		/// The window's width
 		/// </summary>
 		public int width {
