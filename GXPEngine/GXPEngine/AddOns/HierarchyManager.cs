@@ -23,7 +23,7 @@ namespace GXPEngine {
 	/// Similarly, you can use HierarchyManager.Instance.LateCall to postpone a certain method call until 
 	/// after the update loop.
 	/// </summary>
-	class HierarchyManager {
+	public class HierarchyManager {
 		public static HierarchyManager Instance {
 			get {
 				if (instance == null) {

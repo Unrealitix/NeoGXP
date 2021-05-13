@@ -7,7 +7,7 @@ namespace GXPEngine {
 	/// This is not a gameobject. Instead, subscribe the RenderWindow method to the main game's 
 	/// OnAfterRender event.
 	/// </summary>
-	class Window {
+	public class Window {
 		/// <summary>
 		/// The x coordinate of the window's left side
 		/// </summary>

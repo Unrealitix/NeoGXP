@@ -20,7 +20,7 @@ namespace GXPEngine {
 	///   public static string
 	///   public static string[]
 	/// </summary>
-	class Settings
+	public class Settings
 	{
 		// Settings that are related to this class and the parsing process:
 		public static string SettingsFileName = "settings.txt"; // should be in bin/Debug or bin/Release. Use "MySubFolder/settings.txt" for subfolders.
