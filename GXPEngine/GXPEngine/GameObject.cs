@@ -450,15 +450,12 @@ namespace GXPEngine
 		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
 		/// (the point and penetration depth fields of the collision object will always be zero).
 		/// Otherwise it returns null.
+		/// 
+		/// As objectsToCheck, pass an array or List of game objects to check against 
+		/// (this moving game object will move through all objects that are not in the given array or list).
 		/// </summary>
-		virtual public Collision MoveUntilCollision(float vx, float vy, GameObject[] objectsToCheck) {
+		virtual public Collision MoveUntilCollision(float vx, float vy, IEnumerable<GameObject> objectsToCheck) {
 			Collision col = null;
-			//Vector2 normal = new Vector2 ();
-			if (objectsToCheck.Length == 0) {
-				x += vx;
-				y += vy;
-				return col;
-			}
 			float minTOI = 1;
 			foreach (GameObject other in objectsToCheck) {
 				Vector2 newNormal;
