@@ -2,17 +2,6 @@ using GXPEngine;
 using System.Collections.Generic;
 using System;
 
-struct GameObjectPair {
-	public GameObject parent;
-	public GameObject child;
-	public int index;
-	public GameObjectPair(GameObject pParent,GameObject pChild, int pIndex=-1) {
-		parent = pParent;
-		child = pChild;
-		index = pIndex;
-	}
-}
-
 namespace GXPEngine {
 	/// <summary>
 	/// If you are getting strange bugs because you are calling Destroy during the Update loop, 
@@ -24,6 +13,18 @@ namespace GXPEngine {
 	/// after the update loop.
 	/// </summary>
 	public class HierarchyManager {
+
+		struct GameObjectPair {
+			public GameObject parent;
+			public GameObject child;
+			public int index;
+			public GameObjectPair(GameObject pParent, GameObject pChild, int pIndex = -1) {
+				parent = pParent;
+				child = pChild;
+				index = pIndex;
+			}
+		}
+
 		public static HierarchyManager Instance {
 			get {
 				if (instance == null) {
