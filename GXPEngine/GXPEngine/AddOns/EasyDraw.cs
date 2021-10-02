@@ -183,6 +183,28 @@ namespace GXPEngine
 			graphics.DrawString (text, font, brush, x, y); //left+BoundaryPadding/2,top+BoundaryPadding/2);
 		}
 
+		public void Text(string text) {
+			float tx = 0;
+			float ty = 0;
+			switch (HorizontalTextAlign) {
+				case CenterMode.Center:
+					tx = _texture.width/2;
+					break;
+				case CenterMode.Max:
+					tx = _texture.width;
+					break;
+			}
+			switch (VerticalTextAlign) {
+				case CenterMode.Center:
+					ty = _texture.height / 2;
+					break;
+				case CenterMode.Max:
+					ty = _texture.height;
+					break;
+			}
+			Text(text, tx, ty);
+		}
+
 		public float TextWidth(string text) 
 		{
 			SizeF size = graphics.MeasureString (text, font);
