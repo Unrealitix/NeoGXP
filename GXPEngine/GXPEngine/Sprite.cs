@@ -94,6 +94,14 @@ namespace GXPEngine
 			_uvs = new float[8] { left, top, right, top, right, bottom, left, bottom };
 		}
 
+		public float[] GetUVs(bool safe=true) {
+			if (safe) {
+				return (float[])_uvs.Clone();
+			} else {
+				return _uvs;
+			}
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														createCollider
 		//------------------------------------------------------------------------------------------------------------------------
