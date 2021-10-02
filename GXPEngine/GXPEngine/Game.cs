@@ -142,10 +142,13 @@ namespace GXPEngine
 		/// <param name='height'>
 		/// The new height of the viewport.
 		/// </param>
-		public void SetViewport(int x, int y, int width, int height) {
+		public void SetViewport(int x, int y, int width, int height, bool setRenderRange=true) {
 			// Translate from GXPEngine coordinates (origin top left) to OpenGL coordinates (origin bottom left):
 			//Console.WriteLine ("Setting viewport to {0},{1},{2},{3}",x,y,width,height);
 			_glContext.SetScissor(x, game.height - height - y, width, height);
+			if (setRenderRange) {
+				_renderRange = new Rectangle(x, y, width, height);
+			}
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
