@@ -302,7 +302,13 @@ namespace GXPEngine
 		/// The text is aligned on the canvas using the current TextAlign values.
 		/// </summary>
 		/// <param name="text">The text to be rendered</param>
-		public void Text(string text) {
+		/// <param name="clear">Whether the canvas should be cleared before drawing the text</param>
+		/// <param name="clearAlpha">The opacity of the clear color (from 0=transparent to 255=opaque)</param>
+		/// <param name="clearRed">The red value of the clear color (0-255)</param>
+		/// <param name="clearGreen">The green value of the clear color (0-255)</param>
+		/// <param name="clearBlue">The blue value of the clear color (0-255)</param>
+		public void Text(string text, bool clear=false, int clearAlpha=0, int clearRed=0, int clearGreen=0, int clearBlue=0) {
+			if (clear) Clear(clearRed, clearGreen, clearBlue, clearAlpha);
 			float tx = 0;
 			float ty = 0;
 			switch (HorizontalTextAlign) {
