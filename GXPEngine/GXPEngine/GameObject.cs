@@ -364,6 +364,14 @@ namespace GXPEngine
 				return _children;
 			}
 		}
+
+		/// <summary>
+		/// Returns the number of children of this game object.
+		/// </summary>
+		/// <returns>The number of children of this game object.</returns>
+		public int GetChildCount() {
+			return _children.Count;
+		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														SetChildIndex()
