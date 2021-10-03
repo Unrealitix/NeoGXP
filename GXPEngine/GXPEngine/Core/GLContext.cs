@@ -22,6 +22,8 @@ namespace GXPEngine.Core {
 		private static bool[] buttons = new bool[MAXBUTTONS+1];
 		private static bool[] mousehits = new bool[MAXBUTTONS+1];
 		private static bool[] mouseup = new bool[MAXBUTTONS+1]; //mouseup kindly donated by LeonB
+		private static int keyPressedCount = 0;
+		private static bool anyKeyDown = false;
 
 		public static int mouseX = 0;
 		public static int mouseY = 0;
@@ -96,8 +98,8 @@ namespace GXPEngine.Core {
 			GL.glfwSetKeyCallback(
 				(int _key, int _mode) => {
 				bool press = (_mode == 1);
-				if (press) keydown[_key] = true;
-				else keyup[_key] = true;
+				if (press) { keydown[_key] = true; anyKeyDown = true; keyPressedCount++; } 
+				else { keyup[_key] = true; keyPressedCount--; }
 				keys[_key] = press;
 			});
 			
@@ -297,6 +299,14 @@ namespace GXPEngine.Core {
 			return keyup[key];
 		}
 		
+		public static bool AnyKey() {
+			return keyPressedCount > 0;
+		}
+
+		public static bool AnyKeyDown() {
+			return anyKeyDown;
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetMouseButton()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -326,6 +336,7 @@ namespace GXPEngine.Core {
 			Array.Clear (keyup, 0, MAXKEYS);
 			Array.Clear (mousehits, 0, MAXBUTTONS);
 			Array.Clear (mouseup, 0, MAXBUTTONS);
+			anyKeyDown = false;
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------

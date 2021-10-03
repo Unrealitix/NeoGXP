@@ -39,6 +39,20 @@ namespace GXPEngine
 		}
 		
 		/// <summary>
+		/// Returns true if any key is currently pressed.
+		/// </summary>
+		public static bool AnyKey() {
+			return GLContext.AnyKey();
+		}
+
+		/// <summary>
+		/// Returns true if any key was pressed down during the current frame.
+		/// </summary>
+		public static bool AnyKeyDown() {
+			return GLContext.AnyKeyDown();
+		}
+
+		/// <summary>
 		/// Returns 'true' if mousebutton is down, else returns 'false'
 		/// </summary>
 		/// <param name='button'>
