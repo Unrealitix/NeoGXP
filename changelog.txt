@@ -1,4 +1,4 @@
-Last update: 3-7-2020
+Last update: 6-10-2021
 
 
 0.0.1 - initial post
@@ -131,3 +131,17 @@ FEATURES:
 * AnimationSprite has useful SetCycle and Animate methods, for easy animation.
 * Utils has a FontLoader method, for loading fonts from (ttf) files.
 * Gizmos: Allows for easily drawing line-based debug shapes on top of the scene.
+
+----- 2021/2022 version (PBO06):
+
+FEATURES:
+
+* Colliders can now be made triggers, ignored by MoveUntilCollision (GetCollisions and OnCollision can be configured to include/exclude triggers or solid colliders)
+* Adding more blend modes
+* More useful EasyDraw methods (Text and Clear overloads)
+* Input.AnyKey(Down)
+* Camera has ScreenPointToGlobal method
+* MoveUntilCollision takes Lists too
+* Enabling framerate independent animation for AnimationSprites
+* TiledLoader can be called from a separate assembly
+* Minor changes (comments, updating folder structure, adding various getters)
