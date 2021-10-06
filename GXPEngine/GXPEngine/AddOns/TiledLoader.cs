@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace TiledMapParser {
 	/// <summary>
@@ -100,6 +101,7 @@ namespace TiledMapParser {
 
 		string _foldername;
 		List<string> _manualObjects;
+		Assembly _callingAssembly;
 
 		/// <summary>
 		/// Creates a new TiledLoader and loads the Tiled file given by filename. 
@@ -139,6 +141,7 @@ namespace TiledMapParser {
 				OnObjectCreated += callback;
 			}
 			_manualObjects=new List<string>();
+			_callingAssembly = Assembly.GetCallingAssembly();
 		}
 
 		/// <summary>
@@ -358,10 +361,17 @@ namespace TiledMapParser {
 					AnimationSprite anim = null;
 					if (autoInstance && obj.Type!=null) {
 						try {
-							anim = (AnimationSprite)Activator.CreateInstance(Type.GetType(obj.Type),
-								new object[] { Path.Combine(_foldername, tileSet.Image.FileName), tileSet.Columns, tileSet.Rows, obj });
+							// The simple way:
+							//anim = (AnimationSprite)Activator.CreateInstance(Type.GetType(obj.Type),
+							//	new object[] { Path.Combine(_foldername, tileSet.Image.FileName), tileSet.Columns, tileSet.Rows, obj });
+							// Necessary when using separate assemblies (engine=DLL):
+							anim = (AnimationSprite)_callingAssembly.CreateInstance(obj.Type,false,BindingFlags.Default,null,
+								new object[] { Path.Combine(_foldername, tileSet.Image.FileName), tileSet.Columns, tileSet.Rows, obj }, null, null);
+							if (anim == null) throw new Exception("Class with name " + obj.Type + " not found in the calling assembly. Check namespace?");
 						} catch (Exception error) {
 							Console.WriteLine("Couldn't automatically create an AnimationSprite object from the Tiled (image) object with ID {0} and type {1}.\n Error: {2}", obj.ID, obj.Type, error.Message);
+							// Check the console for more information!
+							throw error;
 						}
 					}
 					if (anim==null) {
@@ -382,10 +392,17 @@ namespace TiledMapParser {
 					//Console.WriteLine("Skipping non-graphical object: "+obj);
 					if (autoInstance && obj.Type!="") {
 						try {
-							newSprite = (Sprite)Activator.CreateInstance(Type.GetType(obj.Type),
-								new object[] { obj });
+							// The simple way:
+							//newSprite = (Sprite)Activator.CreateInstance(Type.GetType(obj.Type),
+							//	new object[] { obj });
+							// Necessary when using separate assemblies (engine=DLL):
+							newSprite = (Sprite)_callingAssembly.CreateInstance(obj.Type,false,BindingFlags.Default,null,
+								new object[] { obj }, null, null);
+							if (newSprite == null) throw new Exception("Class with name "+obj.Type+" not found in the calling assembly. Check namespace?");
 						} catch (Exception error) {
 							Console.WriteLine("Couldn't automatically create a sprite object from the Tiled (shape) object with ID {0} and type {1}.\n Error: {2}", obj.ID, obj.Type, error.Message);
+							// Check the console for more information!
+							throw error;
 						}
 					}
 				}
