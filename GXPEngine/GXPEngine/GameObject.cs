@@ -82,17 +82,16 @@ namespace GXPEngine
 			}
 		}
 
-		//------------------------------------------------------------------------------------------------------------------------
-		//														Render
-		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// Get all a list of all objects that currently overlap this one.
 		/// Calling this method will test collisions between this object and all other colliders in the scene.
 		/// It can be called mid-step and is included for convenience, not performance.
+		/// Set includeTriggers to true to include trigger colliders in the list, and 
+		/// includeSolid to include solid (=non-trigger) colliders.
 		/// </summary>
-		public GameObject[] GetCollisions ()
+		public GameObject[] GetCollisions (bool includeTriggers = true, bool includeSolid = true)
 		{
-			return game.GetGameObjectCollisions(this);
+			return game.GetGameObjectCollisions(this, includeTriggers, includeSolid);
 		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
@@ -454,7 +453,7 @@ namespace GXPEngine
 
 		/// <summary>
 		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
-		/// until it collides with one of the given objects. 
+		/// until it collides with one of the given objects. Objects without a solid (=non-trigger) collider are ignored.
 		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
 		/// (the point and penetration depth fields of the collision object will always be zero).
 		/// Otherwise it returns null.
@@ -466,6 +465,7 @@ namespace GXPEngine
 			Collision col = null;
 			float minTOI = 1;
 			foreach (GameObject other in objectsToCheck) {
+				if (other.collider != null && other.collider.isTrigger) continue;
 				Vector2 newNormal;
 				float newTOI = TimeOfImpact (other, vx, vy, out newNormal);
 				if (newTOI < minTOI) {
@@ -480,7 +480,7 @@ namespace GXPEngine
 
 		/// <summary>
 		/// Tries to move this object by vx,vy (in parent space, similar to the translate method), 
-		/// until it collides with another object. 
+		/// until it collides with another object that has a solid (=non-trigger) collider. 
 		/// In case of a collision, it returns a Collision object with information such as the normal and time of impact 
 		/// (the point and penetration depth fields of the collision object will always be zero).
 		/// Otherwise it returns null.
@@ -491,7 +491,7 @@ namespace GXPEngine
 		virtual public Collision MoveUntilCollision(float vx, float vy) {
 			x += vx;
 			y += vy;
-			GameObject[] overlaps = GetCollisions ();
+			GameObject[] overlaps = GetCollisions (false,true);
 			x -= vx;
 			y -= vy;
 			return MoveUntilCollision (vx, vy, overlaps);

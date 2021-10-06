@@ -236,9 +236,9 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetGameObjectCollisions()
 		//------------------------------------------------------------------------------------------------------------------------
-		internal GameObject[] GetGameObjectCollisions (GameObject gameObject)
+		internal GameObject[] GetGameObjectCollisions (GameObject gameObject, bool includeTriggers = true, bool includeSolid = true)
 		{
-			return _collisionManager.GetCurrentCollisions(gameObject);
+			return _collisionManager.GetCurrentCollisions(gameObject, includeTriggers, includeSolid);
 		}
 
 

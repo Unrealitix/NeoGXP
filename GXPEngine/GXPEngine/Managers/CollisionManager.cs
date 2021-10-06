@@ -9,7 +9,14 @@ namespace GXPEngine
 	//------------------------------------------------------------------------------------------------------------------------
 	public class CollisionManager
 	{
+		/// <summary>
+		/// Set this to false if you want to be able to remove game objects from the game during OnCollision (=the old, unsafe default behavior).
+		/// </summary>
 		public static bool SafeCollisionLoop=true;
+		/// <summary>
+		/// Set this to false if you also want to include solid colliders (=non triggers) in OnCollision (=the old default behavior).
+		/// </summary>
+		public static bool TriggersOnlyOnCollision = true;
 		
 		private delegate void CollisionDelegate(GameObject gameObject);
 		
@@ -49,9 +56,10 @@ namespace GXPEngine
 			collisionLoopActive = SafeCollisionLoop;
 			for (int i=activeColliderList.Count-1; i>= 0; i--) {
 				ColliderInfo info = activeColliderList[i];
-				for (int j=colliderList.Count-1; j>=0; j--) {
+				for (int j=colliderList.Count-1; j>=0; j--) {					
 					if (j >= colliderList.Count) continue; //fix for removal in loop
 					GameObject other = colliderList[j];
+					if (other.collider == null || !(other.collider.isTrigger || !TriggersOnlyOnCollision)) continue;
 					if (info.gameObject != other) {
 						if (info.gameObject.HitTest(other)) {
 							if (info.onCollision != null) {
@@ -67,12 +75,13 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		//												 GetCurrentCollisions()
 		//------------------------------------------------------------------------------------------------------------------------
-		public GameObject[] GetCurrentCollisions (GameObject gameObject)
+		public GameObject[] GetCurrentCollisions (GameObject gameObject, bool includeTriggers=true, bool includeSolid=true)
 		{
 			List<GameObject> list = new List<GameObject>();
 			for (int j=colliderList.Count-1; j>=0; j--) {
-				if (j >= colliderList.Count) continue; //fix for removal in loop
+				if (j >= colliderList.Count) continue; //fix for removal in loop				
 				GameObject other = colliderList[j];
+				if (other.collider == null || (other.collider.isTrigger && !includeTriggers) || (!other.collider.isTrigger && !includeSolid)) continue;
 				if (gameObject != other) {
 					if (gameObject.HitTest(other)) {
 						list.Add(other);

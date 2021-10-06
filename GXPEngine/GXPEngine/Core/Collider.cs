@@ -4,6 +4,16 @@ namespace GXPEngine.Core
 {
 	public class Collider
 	{
+		public bool isTrigger {
+			get {
+				return _isTrigger;
+			}
+			set {
+				_isTrigger = value;
+			}
+		}
+		bool _isTrigger=false;
+
 		public Collider ()
 		{
 		}
