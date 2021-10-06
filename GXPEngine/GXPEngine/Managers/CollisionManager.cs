@@ -14,9 +14,9 @@ namespace GXPEngine
 		/// </summary>
 		public static bool SafeCollisionLoop=true;
 		/// <summary>
-		/// Set this to false if you also want to include solid colliders (=non triggers) in OnCollision (=the old default behavior).
+		/// Set this to true if you only want to include trigger colliders in OnCollision (=more efficient).
 		/// </summary>
-		public static bool TriggersOnlyOnCollision = true;
+		public static bool TriggersOnlyOnCollision = false;
 		
 		private delegate void CollisionDelegate(GameObject gameObject);
 		
