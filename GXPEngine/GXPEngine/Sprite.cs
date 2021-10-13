@@ -39,6 +39,14 @@ namespace GXPEngine
 			initializeFromTexture(new Texture2D(bitmap));
 		}
 
+		public Sprite(Texture2D texture, bool addCollider = true) : base(addCollider) {
+			if (Game.main == null) {
+				throw new Exception("Sprites cannot be created before creating a Game instance.");
+			}
+			name = "Sprite from " + texture.filename;
+			initializeFromTexture(texture);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														OnDestroy()
 		//------------------------------------------------------------------------------------------------------------------------
