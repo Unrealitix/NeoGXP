@@ -165,6 +165,11 @@ namespace GXPEngine.Core {
 				GL.glfwDisable(GL.GLFW_MOUSE_CURSOR);
 			}
 		}
+
+		public void SetVSync(bool enableVSync) {
+			_vsyncEnabled = enableVSync;
+			GL.glfwSwapInterval(_vsyncEnabled);
+		}
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														SetScissor()

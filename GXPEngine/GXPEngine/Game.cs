@@ -287,7 +287,11 @@ namespace GXPEngine
 			set {
 				_glContext.targetFps = value;
 			}
-		}	
+		}
+
+		public void SetVSync(bool enableVSync) {
+			_glContext.SetVSync(enableVSync);
+		}
 
 		int CountSubtreeSize(GameObject subtreeRoot) {
 			int counter=1; // for the root
