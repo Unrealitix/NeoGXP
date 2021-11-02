@@ -3,6 +3,28 @@ using System;
 using System.IO;
 using System.Reflection;
 
+/* Here is an example of a possible settings file (create a file settings.txt in bin/Debug, and copy the next lines to it):
+
+
+// You can add comment lines like this to settings.txt,
+//  but only if the line *starts with* two forward slashes.
+// Make sure the capitalization and spelling of variable names matches those in Settings.cs.
+// (No semi colon is needed at the end of a line.)
+// integer values:
+Width = 800
+Height = 600
+// boolean values:
+FullScreen = true
+// string values (no quotes needed):
+SettingsFileName = settings.txt
+// Currently Settings.cs contains no float parameters or string arrays, but these would be 
+// initialized as follows (no f needed):
+// MyFloat=1.5
+// MyLevels = Level1.tmx, Level2.tmx, Level3.tmx 
+
+
+*/
+
 namespace GXPEngine {
 	/// <summary>
 	/// Static class that contains various settings, such as screen resolution and player controls. 
