@@ -1,4 +1,4 @@
-Last update: 6-10-2021
+Last update: 2-11-2021
 
 
 0.0.1 - initial post
@@ -137,6 +137,7 @@ FEATURES:
 FEATURES:
 
 * Colliders can now be made triggers, ignored by MoveUntilCollision (GetCollisions and OnCollision can be configured to include/exclude triggers or solid colliders)
+* Adding SpriteBatch, for efficient rendering of large groups of static sprites (without colliders)
 * Adding more blend modes
 * More useful EasyDraw methods (Text and Clear overloads)
 * Input.AnyKey(Down)
@@ -144,4 +145,6 @@ FEATURES:
 * MoveUntilCollision takes Lists too
 * Enabling framerate independent animation for AnimationSprites
 * TiledLoader can be called from a separate assembly
-* Minor changes (comments, updating folder structure, adding various getters)
+* VSync can be toggled at runtime
+* Sprites can be initialized from a texture
+* Minor changes (comments, updating folder structure, adding various getters, ...)
