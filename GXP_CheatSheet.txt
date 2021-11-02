@@ -1,0 +1,71 @@
+GXPEngine cheat sheet: 
+
+An overview of the most important public variables (and get-/setters) and methods
+
+===== Transformable:
+
+Contains the position, rotation and scale of game objects, and methods to modify those and change between (parent/child) spaces.
+
+--- Variables:
+
+float x,y		position (in pixels. Origin = top left)
+float rotation		rotation in degrees (positive = clockwise)
+float scaleX,Y		The x and y scale (default = 1)
+float scale		Sets both the X and Y scale
+
+--- Methods:
+
+Turn(float angle)	change the rotation by the given angle in degrees
+Move(float stepX, float stepY)	Move the object, based on its current rotation
+Translate(float stepX, float stepY)	Move the object in its parent space (ignoring its rotation)
+SetScaleXY(float scaleX, float scalY)	Sets the scale
+
+===== GameObject (inherits from Transformable):
+
+Contains information about the game object hierarchy (parent, children), and methods to add and destroy game objects. A game object is only rendered if one of its ancestors is the current game.
+
+--- Variables:
+
+bool visible		Whether the GameObject and its children should be rendered
+Game game		Returns a reference to the current Game
+GameObject parent	The parent game object 
+
+
+--- Methods:
+
+- hierarchy related:
+
+Destroy()			Destroy the game object and all its children
+LateDestroy()			Destroys the game object after finishing the current Update and OnCollision loop
+AddChild(GameObject child)	Adds another game object as child of this one
+LateAddChild(GameObject child)	Adds another game object as child of this one after finishing the current Update and OnCollision loop
+List<GameObject> GetChildren	Returns a list of all child objects
+GameObject FindObjectOfType<T>()	Returns the first game object of type T, found within the descendants of this game object
+GameObject[] FindObjectsOfType<T>()	Returns all game objects of type T, found within the descendants of this game object
+
+
+- collision related:
+
+GameObject[] GetCollisions	Returns a list of all objects (with colliders) that currently overlap this one
+bool HitTest(GameObject other)	Returns whether this object overlaps with an other object (both must have colliders)
+bool HitTestPoint(float x, float y)	Returns whether a point in screen space overlaps with this game object
+Collision MoveUntilCollision(float vx, float vy):
+				Moves the object by vx, vy (in parent space), until it collides with another object with a solid collider
+
+===== Sprite (inherits from GameObject):
+
+Represents an image on screen, and holds information on how the image should be rendered (color, etc).
+
+--- Variables:
+
+int width			The width of the sprite. This is the width in pixels, multiplied by the current scaleX (rounded)
+int height			The height of the sprite. This is the height in pixels, multiplied by the current scaleY (rounded)
+float alpha			The opacity (which is the opposite of transparency) of the sprite. 0=transparent, 1=opaque.
+
+--- Methods:
+
+Sprite(string filename)		Main constructor. Creates a sprite from an image file (png, jpg, etc.)
+SetOrigin(float x, float y)	Sets the (rotation) origin of the sprite, in pixels. 
+				 Typical use: SetOrigin(width/2,height/2), *before* scaling the sprite
+Mirror(bool mirrorX, bool mirrorY)	Enables mirroring (reflecting) the sprite in two directions
+SetColor(float r, float g, float b)	Sets the color of the sprite. Pass red, green and blue values between 0 and 1.

@@ -14,6 +14,13 @@ namespace GXPEngine
 
 		static Dictionary<string, PrivateFontCollection> fontIndex=null;
 
+		/// <summary>
+		/// Creates a font from a font file (extension: ttf), with the given point size and font style.
+		/// </summary>
+		/// <param name="filename">The font file (should be of type .ttf)</param>
+		/// <param name="fontSize">The size in points</param>
+		/// <param name="fontStyle">The font style (pass e.g. FontStyle.Italic|FontStyle.Bold here)</param>
+		/// <returns></returns>
 		public static Font LoadFont(string filename, float fontSize, FontStyle fontStyle = FontStyle.Regular) {
 			if (fontIndex==null) {
 				fontIndex=new Dictionary<string, PrivateFontCollection>();
