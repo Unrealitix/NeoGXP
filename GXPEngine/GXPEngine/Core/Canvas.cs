@@ -38,7 +38,7 @@ namespace GXPEngine
 			_invalidate = true;
 		}
 
-		public Canvas(string filename, bool addCollider=true):base(filename,addCollider)
+		public Canvas(string filename, bool addCollider=true):base(filename, false, addCollider)
 		{
 			_graphics = Graphics.FromImage(texture.bitmap);
 			_invalidate = true;
