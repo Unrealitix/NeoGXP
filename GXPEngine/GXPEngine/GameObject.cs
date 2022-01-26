@@ -570,11 +570,11 @@ namespace GXPEngine
 		/// The y coordinate to transform.
 		/// </param>
 		public override Vector2 InverseTransformPoint(float x, float y) {
-			Vector2 ret = base.InverseTransformPoint (x, y);
 			if (parent == null) {
-				return ret;
+				return base.InverseTransformPoint(x, y);
 			} else {
-				return parent.InverseTransformPoint (ret.x, ret.y);
+				Vector2 ret = parent.InverseTransformPoint(x, y);
+				return base.InverseTransformPoint (ret.x, ret.y);
 			}
 		}
 
@@ -590,11 +590,11 @@ namespace GXPEngine
 		/// The y coordinate to transform.
 		/// </param>
 		public override Vector2 InverseTransformDirection(float x, float y) {
-			Vector2 ret = base.InverseTransformDirection (x, y);
 			if (parent == null) {
-				return ret;
+				return base.InverseTransformDirection(x, y);
 			} else {
-				return parent.InverseTransformDirection (ret.x, ret.y);
+				Vector2 ret = parent.InverseTransformDirection(x, y);
+				return base.InverseTransformDirection (ret.x, ret.y);
 			}
 		}
 
