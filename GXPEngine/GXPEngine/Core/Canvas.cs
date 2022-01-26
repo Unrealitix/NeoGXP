@@ -76,22 +76,26 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// Draws a Sprite onto this Canvas.
-		/// It will ignore Sprite properties, such as color and animation.
+		/// It will ignore color and alpha, but it will use position, rotation, scale, origin, current frame.
 		/// </summary>
 		/// <param name='sprite'>
 		/// The Sprite that should be drawn.
 		/// </param>
 		private PointF[] destPoints = new PointF[3];
 		public void DrawSprite(Sprite sprite) {
-			float halfWidth = sprite.texture.width / 2.0f;
-			float halfHeight = sprite.texture.height / 2.0f;
-			Vector2 p0 = sprite.TransformPoint(-halfWidth, -halfHeight);
-			Vector2 p1 = sprite.TransformPoint(halfWidth, -halfHeight);
-			Vector2 p2 = sprite.TransformPoint(-halfWidth, halfHeight);
-			destPoints[0] = new PointF(p0.x, p0.y);
-			destPoints[1] = new PointF(p1.x, p1.y);
-			destPoints[2] = new PointF(p2.x, p2.y);
-			graphics.DrawImage(sprite.texture.bitmap, destPoints);
+			float wd = sprite.texture.width;
+			float ht = sprite.texture.height;
+			Vector2[] corners = sprite.GetExtents();
+			destPoints[0] = new PointF(corners[0].x, corners[0].y);
+			destPoints[1] = new PointF(corners[1].x, corners[1].y);
+			destPoints[2] = new PointF(corners[3].x, corners[3].y);
+			var uvs = sprite.GetUVs();
+			graphics.DrawImage(
+				sprite.texture.bitmap, 
+				destPoints, 
+				new RectangleF(uvs[0]*wd,uvs[1]*ht,(uvs[2]-uvs[0])*wd,(uvs[5]-uvs[1])*ht), 
+				GraphicsUnit.Pixel
+			);
 		}
 
 		// Called by the garbage collector
