@@ -1,4 +1,4 @@
-Last update: 2-11-2021
+Last update: 30-11-2022
 
 
 0.0.1 - initial post
@@ -148,3 +148,18 @@ FEATURES:
 * VSync can be toggled at runtime
 * Sprites can be initialized from a texture
 * Minor changes (comments, updating folder structure, adding various getters, ...)
+
+----- 2022/2023 version (PBO06):
+
+BUG FIXES:
+* InverseTransformPoint and InverseTransformDirection work correctly now, also with multiple ancestors
+* Sprite: after rendering, it resets the glColor to white
+* Canvas.DrawSprite considers origin and works with AnimationSprites
+* The Canvas constructor that takes a Sprite now works correctly with addCollider parameter
+
+FEATURES:
+* More key codes
+* TransformPoint and InverseTransformPoint can take a target ancestor as argument
+* Camera windows can be configured to not clear the background (useful for UI overlays)
+
+
