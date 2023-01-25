@@ -83,6 +83,7 @@ namespace GXPEngine {
 		int _windowX, _windowY;
 		int _width, _height;
 		bool _dirty=true;
+		bool _clear;
 
 		Transformable window;
 
@@ -90,12 +91,13 @@ namespace GXPEngine {
 		/// Creates a render window in the rectangle given by x,y,width,height.
 		/// The camera determines the focal point, rotation and scale of this window.
 		/// </summary>
-		public Window(int x, int y, int width, int height, GameObject camera) {
+		public Window(int x, int y, int width, int height, GameObject camera, bool clearBackground=true) {
 			_windowX = x;
 			_windowY = y;
 			_width = width;
 			_height = height;
 			this.camera = camera;
+			_clear = clearBackground;
 			window = new Transformable ();
 		}
 
@@ -127,7 +129,7 @@ namespace GXPEngine {
 				var oldRange = main.RenderRange;
 				SetRenderRange();
 				main.SetViewport (_windowX, _windowY, _width, _height, false);
-				GL.Clear(GL.COLOR_BUFFER_BIT);
+				if (_clear) GL.Clear(GL.COLOR_BUFFER_BIT);
 				current.Render (glContext);
 				main.SetViewport ((int)oldRange.left, (int)oldRange.top, (int)oldRange.width, (int)oldRange.height);
 			}
