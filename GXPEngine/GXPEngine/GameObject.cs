@@ -110,7 +110,7 @@ namespace GXPEngine
 				glContext.PushMatrix(matrix);
 				
 				RenderSelf (glContext);
-				foreach (GameObject child in GetChildren()) {
+				foreach (GameObject child in GetChildren(false)) {
 					child.Render(glContext);
 				}
 				
